@@ -112,16 +112,121 @@ VS Code / Cursor debug configs live in `.vscode/launch.json`:
 - **Vitest: current file** — debug the currently focused test file.
 - **Vitest: all** — debug the entire test suite.
 
-## Deploying to Cloudflare Pages (PR 3)
+## Deploying to Cloudflare Workers
 
-After `npm run build`, the deployable artefact is `out/`. In the Cloudflare Pages
-dashboard:
+Build artefact is `out/` (`npm run build`). We deploy it as an **assets-only
+Cloudflare Worker** using Workers Static Assets — no server code, no
+`@opennextjs/cloudflare`, no Pages.
 
+> ℹ️ **Why Workers and not Pages?** As of 2026, Cloudflare Pages is in
+> maintenance mode and Cloudflare officially recommends Workers Static Assets
+> for new projects. Workers has feature parity for our use case (static HTML,
+> `_redirects`, `_headers`, custom domains) and gets all new features first.
+
+The deploy config lives in [`wrangler.jsonc`](./wrangler.jsonc):
+
+```jsonc
+{
+  "name": "lmgttfy",
+  "compatibility_date": "2026-04-01",
+  "assets": {
+    "directory": "./out/",
+    "not_found_handling": "404-page"
+  }
+}
+```
+
+The `public/_redirects` file is honoured automatically — that's how the recipient
+SPA-fallback rewrite (`/:src/:tgt[/...] -> /walkthrough/`) works in production.
+
+Two automation paths — pick one, don't run both.
+
+### 1. Git integration via Workers Builds (recommended)
+
+One-time setup in the Cloudflare dashboard under **Workers & Pages → Create →
+Import a repository**. After that: every push to `main` triggers a production
+deploy, every other branch / PR gets a per-version preview URL.
+
+- **Repo:** connect this GitHub repo
+- **Production branch:** `main`
 - **Build command:** `npm run build`
-- **Build output directory:** `out`
-- **Environment variables:** none
+- **Deploy command:** `npx wrangler deploy`
+- **Root directory:** `/`
 
-Add a `public/_headers` file (in PR 3) with at least:
+> ⚠️ **Do _not_ accept the wizard's "Next.js" framework integration.** It
+> auto-injects `npx opennextjs-cloudflare build` to convert Next.js into a
+> Worker bundle, which expects an SSR build and crashes our static export
+> with:
+>
+> ```
+> ENOENT ... .next/standalone/.next/server/pages-manifest.json
+> ```
+>
+> We're on `output: 'export'`. Set the build command explicitly to
+> `npm run build` and let `wrangler.jsonc` handle the rest. If your dashboard
+> already has the OpenNext wrapper, edit the build configuration and replace
+> the build command with `npm run build`.
+
+No GitHub secrets, no workflow file. Cloudflare runs the build on its own
+infra. Gates (`make check`) are not enforced on Cloudflare's build — add the
+GitHub Actions path below if you want them to be.
+
+### 2. GitHub Actions (when you want CI gates before deploy)
+
+Use this when a failing test/lint should block the deploy. Disable Workers
+Builds in the Cloudflare dashboard first (or it will race the workflow).
+
+Required GitHub repo secrets:
+
+- `CLOUDFLARE_API_TOKEN` — scoped to **Account → Workers Scripts → Edit**
+- `CLOUDFLARE_ACCOUNT_ID`
+
+Workflow:
+
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - run: make check
+      - run: npm run build
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+```
+
+For PR previews on Workers, swap `command: deploy` with
+`command: versions upload` — that uploads a non-prod Worker version with its
+own URL, leaving production untouched until you promote it.
+
+### Manual escape hatch
+
+```bash
+npm run build
+npx wrangler deploy
+```
+
+For pushing a hotfix without going through CI. Requires a Cloudflare API token
+either via `wrangler login` or `CLOUDFLARE_API_TOKEN` env var.
+
+### Headers (deferred)
+
+`public/_headers` is not yet committed. Minimum to add when you do:
 
 ```
 /*
@@ -131,9 +236,8 @@ Add a `public/_headers` file (in PR 3) with at least:
   Permissions-Policy: interest-cohort=()
 ```
 
-CSP is intentionally loose for now (the QR uses an inline data URI; the cursor SVG
-will too in PR 2). Tighten when the walkthrough is finished and the asset surface
-is known.
+CSP is intentionally loose right now (QR is an inline data URI, cursor SVG is
+inline). Tighten when the asset surface is locked down.
 
 ## Not-doing list (kept here so future-us doesn't re-litigate)
 

@@ -1,0 +1,25 @@
+// Cloudflare Workers Static Assets config.
+//
+// We deploy the Next.js static export (`out/`) as an assets-only Worker.
+// Cloudflare honours `out/_redirects` and `out/_headers` natively, so the
+// recipient SPA-fallback rule in `public/_redirects` (`/:src/:tgt[/...]
+// -> /walkthrough/`) "just works" once `next build` copies the file into
+// `out/`.
+//
+// Why Workers and not Pages?
+// As of 2026, Pages is in maintenance mode and Cloudflare recommends
+// Workers Static Assets for new projects. Feature parity is there for our
+// use case (static HTML, _redirects, _headers, custom domain).
+//
+// `name` must match the Worker created in the Cloudflare dashboard. If
+// you forked this repo, change it to your own Worker name (or rename the
+// Worker in the dashboard to match).
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "lmgttfy",
+  "compatibility_date": "2026-04-01",
+  "assets": {
+    "directory": "./out/",
+    "not_found_handling": "404-page"
+  }
+}
