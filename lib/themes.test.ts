@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
-import { isTheme, parseTheme } from './themes';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { isTheme, loadStoredTheme, parseTheme, saveStoredTheme } from './themes';
 
 describe('themes', () => {
   describe('isTheme', () => {
@@ -31,6 +31,25 @@ describe('themes', () => {
     ];
     it.each(cases)('parseTheme(%j) -> %j', (input, expected) => {
       expect(parseTheme(input)).toBe(expected);
+    });
+  });
+
+  describe('storage', () => {
+    beforeEach(() => window.localStorage.clear());
+    afterEach(() => window.localStorage.clear());
+
+    it('loads null when storage is empty', () => {
+      expect(loadStoredTheme()).toBeNull();
+    });
+
+    it('round-trips a valid theme', () => {
+      saveStoredTheme('y2k');
+      expect(loadStoredTheme()).toBe('y2k');
+    });
+
+    it('treats unknown values as missing', () => {
+      window.localStorage.setItem('lmgttfy:theme', 'neon');
+      expect(loadStoredTheme()).toBeNull();
     });
   });
 });

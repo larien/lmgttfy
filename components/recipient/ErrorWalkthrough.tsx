@@ -15,7 +15,7 @@ interface Props {
   rawTgt?: string;
 }
 
-function messageFor(props: Props): string {
+export function messageFor(props: Props): string {
   switch (props.error) {
     case 'invalid_src':
     case 'invalid_tgt':
@@ -23,7 +23,7 @@ function messageFor(props: Props): string {
     case 'empty_text':
       return ERROR_LINES.emptyText;
     case 'text_too_long':
-      return 'That text is too long. The point is brevity.';
+      return ERROR_LINES.textTooLong;
     case 'same_lang': {
       // Both segments are valid LangCodes here (validation reached `same_lang`
       // only after both passed). Format with the human-readable name.

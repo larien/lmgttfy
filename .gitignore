@@ -4,6 +4,9 @@ out/
 dist/
 coverage/
 tsconfig.tsbuildinfo
+# Next.js regenerates this on every dev/build invocation with a path that
+# differs between modes; tracking it just adds noise to every diff.
+next-env.d.ts
 *.log
 .DS_Store
 .env

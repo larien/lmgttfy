@@ -25,7 +25,9 @@ describe('snarkLines static data', () => {
 
 describe('sameLangError', () => {
   it('formats both slots with the same label', () => {
-    expect(sameLangError('English')).toBe('You want to translate English to English. Take a moment.');
+    expect(sameLangError('English')).toBe(
+      "English to English. You don't need a translator, you need a mirror.",
+    );
   });
 });
 

@@ -38,13 +38,14 @@ export const ERROR_LINES = {
   notFound: 'This page is more lost than you are.',
   invalidLang: "That's not a language. Try one that exists.",
   emptyText: 'You forgot the part where you write the thing. Classic.',
+  textTooLong: 'That text is too long. The point is brevity.',
   copyEmptyText: 'You forgot the text. Classic.',
   emptyTextHint: 'Add some text to mock someone',
   defaultShareHint: 'Your shareable link updates as you type · ⌘+Enter to copy',
 } as const;
 
 export function sameLangError(lang: string): string {
-  return `You want to translate ${lang} to ${lang}. Take a moment.`;
+  return `${lang} to ${lang}. You don't need a translator, you need a mirror.`;
 }
 
 export interface ExampleChip {

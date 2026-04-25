@@ -18,7 +18,13 @@ import {
   SHARE_TITLE,
   TAGLINE_TAUNTS,
 } from '@/lib/snarkLines';
-import { THEMES, THEME_LABELS, type Theme } from '@/lib/themes';
+import {
+  loadStoredTheme,
+  saveStoredTheme,
+  THEMES,
+  THEME_LABELS,
+  type Theme,
+} from '@/lib/themes';
 import { buildRecipientUrl } from '@/lib/url';
 import { MAX_TEXT_LEN } from '@/lib/validation';
 import { Wordmark } from '@/components/shared/Wordmark';
@@ -56,14 +62,27 @@ export function Composer() {
 
   // Randomise the surface text (taunt + snark) on mount only — never during
   // SSR/build, otherwise hydration mismatches would log warnings. Same goes
-  // for navigator.share, which doesn't exist during static export.
+  // for navigator.share and the stored theme, which only exist client-side.
   useEffect(() => {
     /* eslint-disable react-hooks/set-state-in-effect */
     setTaunt(pickRandom(TAGLINE_TAUNTS));
     setSnark(pickRandom(REVEAL_LINES));
     setCanShare(typeof navigator !== 'undefined' && typeof navigator.share === 'function');
+    const stored = loadStoredTheme();
+    if (stored) setTheme(stored);
     /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
+
+  // Persist the user's theme choice. Skipped on the very first render because
+  // `theme` still equals the default at that point — no need to thrash storage.
+  const themeMounted = useRef(false);
+  useEffect(() => {
+    if (!themeMounted.current) {
+      themeMounted.current = true;
+      return;
+    }
+    saveStoredTheme(theme);
+  }, [theme]);
 
   // Live URL — derived state, no useEffect needed.
   const shareUrl = useMemo(

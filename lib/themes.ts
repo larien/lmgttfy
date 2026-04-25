@@ -20,3 +20,30 @@ export function parseTheme(s: string | null | undefined): Theme {
   if (!s) return DEFAULT_THEME;
   return isTheme(s) ? s : DEFAULT_THEME;
 }
+
+const THEME_STORAGE_KEY = 'lmgttfy:theme';
+
+// Read the persisted sender theme. Returns `null` when storage is empty,
+// unavailable (private mode, SSR), or contains an unknown value — the
+// caller decides what initial state to use in those cases.
+export function loadStoredTheme(): Theme | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = window.localStorage.getItem(THEME_STORAGE_KEY);
+    if (!raw) return null;
+    return isTheme(raw) ? raw : null;
+  } catch {
+    return null;
+  }
+}
+
+// Persist the sender theme. Failures (quota, disabled storage) are
+// swallowed — losing this preference is harmless.
+export function saveStoredTheme(theme: Theme): void {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+  } catch {
+    // ignore
+  }
+}

@@ -10,4 +10,9 @@
 # preserved in the address bar) to the walkthrough shell, which parses
 # window.location.pathname client-side.
 
+# Two- and three-plus-segment forms all reach the walkthrough shell. The
+# two-segment forms catch users who shared a half-built URL (no text) so
+# they get the typed `empty_text` error in-app instead of a Cloudflare 404.
+/:src/:tgt /walkthrough/ 200
+/:src/:tgt/ /walkthrough/ 200
 /:src/:tgt/* /walkthrough/ 200
