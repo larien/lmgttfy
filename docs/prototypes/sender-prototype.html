@@ -1,0 +1,1226 @@
+<div id="app">
+    <header class="page-header">
+      <div class="header-row">
+        <div>
+          <div class="wordmark">lmgttfy<span class="dot">.</span>com</div>
+          <div class="tagline">Let Me Google Translate That For You. <span class="tagline-taunt" id="taglineTaunt">Mock with care.</span></div>
+        </div>
+        <div class="palette-switcher">
+          <span class="palette-label">Try a palette:</span>
+          <div class="palette-options">
+            <button class="palette-btn" data-palette="chartreuse" title="Chartreuse"><span style="background:#a8d100"></span></button>
+            <button class="palette-btn" data-palette="coral" title="Coral"><span style="background:#f04438"></span></button>
+            <button class="palette-btn" data-palette="indigo" title="Indigo"><span style="background:#4f46e5"></span></button>
+            <button class="palette-btn active" data-palette="magenta" title="Magenta"><span style="background:#e91e63"></span></button>
+            <button class="palette-btn" data-palette="purple" title="Purple"><span style="background:#7c3aed"></span></button>
+            <button class="palette-btn" data-palette="terracotta" title="Terracotta (original)"><span style="background:#c44a2e"></span></button>
+          </div>
+        </div>
+      </div>
+    </header>
+  
+    <main class="composer">
+      <div class="composer-grid">
+        <div class="composer-form">
+          <label class="field">
+            <span class="field-label">What should they have translated?</span>
+            <textarea
+              id="textInput"
+              placeholder="Paste the text they were too lazy to translate themselves"
+              maxlength="200"
+              rows="3"
+            ></textarea>
+            <div class="field-meta">
+              <div class="examples">
+                <span class="examples-label">Try:</span>
+                <button class="example-chip" data-text="What time is it in Tokyo?" data-src="en" data-tgt="ja">"What time is it in Tokyo?"</button>
+                <button class="example-chip" data-text="How do I say hello?" data-src="en" data-tgt="fr">"How do I say hello?"</button>
+                <button class="example-chip" data-text="¿Dónde está la biblioteca?" data-src="es" data-tgt="en">"¿Dónde está...?"</button>
+              </div>
+              <span class="field-hint"><span id="charCount">0</span> / 200</span>
+            </div>
+          </label>
+  
+          <div class="lang-fields">
+            <label class="field">
+              <span class="field-label">From</span>
+              <select id="srcLangSelect" class="lang-input">
+                <option value="auto">Detect language</option>
+                <option value="en" selected>English</option>
+                <option value="es">Spanish</option>
+                <option value="pt">Portuguese</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+                <option value="it">Italian</option>
+                <option value="ja">Japanese</option>
+                <option value="ko">Korean</option>
+                <option value="zh">Chinese</option>
+                <option value="ru">Russian</option>
+                <option value="ar">Arabic</option>
+              </select>
+            </label>
+            <button class="swap-btn" id="swapBtn" title="Swap languages">⇄</button>
+            <label class="field">
+              <span class="field-label">To</span>
+              <select id="tgtLangSelect" class="lang-input">
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+                <option value="pt" selected>Portuguese</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+                <option value="it">Italian</option>
+                <option value="ja">Japanese</option>
+                <option value="ko">Korean</option>
+                <option value="zh">Chinese</option>
+                <option value="ru">Russian</option>
+                <option value="ar">Arabic</option>
+              </select>
+            </label>
+          </div>
+  
+          <div class="field">
+            <span class="field-label">Theme</span>
+            <div class="theme-picker">
+              <button class="theme-card" data-theme="warm">
+                <span class="theme-card-swatch swatch-warm"></span>
+                <span class="theme-card-name">Warm</span>
+              </button>
+              <button class="theme-card active" data-theme="dark">
+                <span class="theme-card-swatch swatch-dark"></span>
+                <span class="theme-card-name">Dark</span>
+              </button>
+              <button class="theme-card" data-theme="y2k">
+                <span class="theme-card-swatch swatch-y2k"></span>
+                <span class="theme-card-name">Y2K</span>
+              </button>
+              <button class="theme-card" data-theme="terminal">
+                <span class="theme-card-swatch swatch-terminal"></span>
+                <span class="theme-card-name">Terminal</span>
+              </button>
+            </div>
+          </div>
+  
+          <div class="snark-preview">
+            <div class="snark-preview-label">They'll see something like:</div>
+            <div class="snark-preview-row">
+              <span class="snark-preview-line" id="snarkPreview">"You're welcome."</span>
+              <button class="snark-shuffle" id="snarkShuffle" title="Shuffle">↻</button>
+            </div>
+          </div>
+        </div>
+  
+        <div class="composer-preview">
+          <div class="preview-label">What they'll see</div>
+          <div class="preview-frame" id="previewFrame">
+            <div class="preview-chrome">
+              <div class="preview-dots"><span></span><span></span><span></span></div>
+              <div class="preview-urlbar">translate.lmgttfy.com</div>
+            </div>
+            <div class="preview-site">
+              <div class="preview-wordmark">lmgttfy<span class="preview-dot">.</span>translate</div>
+              <div class="preview-langs">
+                <div class="preview-lang" id="previewSrc">English</div>
+                <div class="preview-swap">⇄</div>
+                <div class="preview-lang" id="previewTgt">Portuguese</div>
+              </div>
+              <div class="preview-panels">
+                <div class="preview-panel" id="previewSrcText">
+                  <span class="preview-placeholder">Your text appears here</span>
+                </div>
+                <div class="preview-panel translated">
+                  <span class="preview-placeholder">…</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <div class="share-section">
+        <div class="share-row">
+          <input type="text" id="shareUrl" class="share-url" readonly />
+          <div class="share-actions">
+            <button id="qrBtn" class="action-btn" title="Show QR code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><line x1="14" y1="14" x2="14" y2="17"/><line x1="14" y1="20" x2="14" y2="21"/><line x1="17" y1="14" x2="21" y2="14"/><line x1="17" y1="17" x2="17" y2="21"/><line x1="20" y1="17" x2="21" y2="17"/><line x1="20" y1="20" x2="21" y2="20"/></svg>
+            </button>
+            <button id="shareBtn" class="action-btn" title="Share" style="display:none">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            </button>
+            <button id="copyBtn" class="copy-btn">Copy</button>
+          </div>
+        </div>
+        <div class="share-hint" id="shareHint">Your shareable link updates as you type · ⌘+Enter to copy</div>
+  
+        <div class="recent-section" id="recentSection" style="display:none">
+          <div class="recent-label">Recent links</div>
+          <div class="recent-list" id="recentList"></div>
+        </div>
+      </div>
+  
+      <div class="qr-modal" id="qrModal">
+        <div class="qr-modal-content">
+          <div class="qr-modal-header">
+            <span>Scan to open</span>
+            <button class="qr-close" id="qrClose">×</button>
+          </div>
+          <div class="qr-canvas" id="qrCanvas"></div>
+          <div class="qr-caption" id="qrCaption"></div>
+        </div>
+      </div>
+    </main>
+  
+    <footer class="page-footer">
+      <div class="footer-text">Not affiliated with Google. We just think you should've used it.</div>
+      <div class="footer-links">
+        <a href="#about" class="footer-link">About</a>
+        <span class="footer-sep">·</span>
+        <a href="#terms" class="footer-link">Terms</a>
+        <span class="footer-sep">·</span>
+        <a href="#privacy" class="footer-link">Privacy</a>
+      </div>
+    </footer>
+  </div>
+  
+  <style>
+    :root {
+      --accent: #e91e63;
+      --accent-soft: rgba(233, 30, 99, 0.15);
+      --accent-bg: #fce4ec;
+      --accent-on-dark: #f48fb1;
+      --copy-success-bg: #e91e63;
+      --copy-success-text: #fff;
+      --bg: #faf5f7;
+    }
+    body.palette-chartreuse {
+      --accent: #a8d100;
+      --accent-soft: rgba(168, 209, 0, 0.15);
+      --accent-bg: #f0f8d4;
+      --accent-on-dark: #a8d100;
+      --copy-success-bg: #a8d100;
+      --copy-success-text: #1a1a1a;
+      --bg: #f5f3ec;
+    }
+    body.palette-coral {
+      --accent: #f04438;
+      --accent-soft: rgba(240, 68, 56, 0.15);
+      --accent-bg: #fee4e2;
+      --accent-on-dark: #ff6b5e;
+      --copy-success-bg: #f04438;
+      --copy-success-text: #fff;
+      --bg: #faf6f3;
+    }
+    body.palette-indigo {
+      --accent: #4f46e5;
+      --accent-soft: rgba(79, 70, 229, 0.15);
+      --accent-bg: #eef2ff;
+      --accent-on-dark: #818cf8;
+      --copy-success-bg: #4f46e5;
+      --copy-success-text: #fff;
+      --bg: #f6f5fa;
+    }
+    body.palette-magenta {
+      --accent: #e91e63;
+      --accent-soft: rgba(233, 30, 99, 0.15);
+      --accent-bg: #fce4ec;
+      --accent-on-dark: #f48fb1;
+      --copy-success-bg: #e91e63;
+      --copy-success-text: #fff;
+      --bg: #faf5f7;
+    }
+    body.palette-purple {
+      --accent: #7c3aed;
+      --accent-soft: rgba(124, 58, 237, 0.15);
+      --accent-bg: #f3eeff;
+      --accent-on-dark: #a78bfa;
+      --copy-success-bg: #7c3aed;
+      --copy-success-text: #fff;
+      --bg: #f7f5fa;
+    }
+    body.palette-terracotta {
+      --accent: #c44a2e;
+      --accent-soft: rgba(196, 74, 46, 0.15);
+      --accent-bg: #fdf6f3;
+      --accent-on-dark: #c44a2e;
+      --copy-success-bg: #2d7a4a;
+      --copy-success-text: #fff;
+      --bg: #f4f1ec;
+    }
+  
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { min-height: 100%; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: #1a1a1a;
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.3s ease;
+    }
+    #app {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 48px 32px 64px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .page-header {
+      margin-bottom: 40px;
+    }
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .wordmark {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: #1a1a1a;
+    }
+    .wordmark .dot { color: var(--accent); transition: color 0.3s; }
+    .tagline {
+      font-size: 14px;
+      color: #6a6a6a;
+      margin-top: 4px;
+      letter-spacing: -0.01em;
+    }
+    .tagline-taunt {
+      color: var(--accent);
+      font-style: italic;
+      transition: color 0.3s;
+    }
+  
+    /* Examples chips */
+    .field-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .examples {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .examples-label {
+      font-size: 11px;
+      color: #8a8680;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .example-chip {
+      background: #fff;
+      border: 1px solid #e3ded6;
+      border-radius: 100px;
+      padding: 4px 10px;
+      font-size: 11px;
+      color: #6a6660;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .example-chip:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-bg);
+    }
+  
+    /* Snark preview */
+    .snark-preview {
+      background: #fff;
+      border: 1px dashed #d6d0c5;
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .snark-preview-label {
+      font-size: 11px;
+      color: #8a8680;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+    .snark-preview-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .snark-preview-line {
+      font-size: 16px;
+      font-weight: 500;
+      color: #2a2826;
+      font-style: italic;
+    }
+    .snark-shuffle {
+      background: transparent;
+      border: 1px solid #e3ded6;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      color: #6a6660;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .snark-shuffle:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: rotate(180deg);
+    }
+    .palette-switcher {
+      background: #fff;
+      border: 1px solid #e3ded6;
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .palette-label {
+      font-size: 10px;
+      color: #8a8680;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 500;
+    }
+    .palette-options {
+      display: flex;
+      gap: 6px;
+    }
+    .palette-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      background: transparent;
+      cursor: pointer;
+      padding: 2px;
+      transition: all 0.15s;
+    }
+    .palette-btn span {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+    }
+    .palette-btn:hover { transform: scale(1.1); }
+    .palette-btn.active { border-color: #1a1a1a; }
+  
+    .composer { flex: 1; }
+    .composer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 32px;
+    }
+  
+    .composer-form { display: flex; flex-direction: column; gap: 24px; }
+    .field { display: flex; flex-direction: column; gap: 8px; }
+    .field-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: #6a6660;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .field-hint {
+      font-size: 11px;
+      color: #a8a49e;
+      align-self: flex-end;
+    }
+    .field-hint.warning { color: #c44a2e; }
+  
+    textarea, .lang-input {
+      font-family: inherit;
+      font-size: 15px;
+      color: #1a1a1a;
+      background: #fff;
+      border: 1px solid #e3ded6;
+      border-radius: 8px;
+      padding: 12px 14px;
+      transition: border-color 0.15s;
+      resize: none;
+      width: 100%;
+    }
+    textarea:focus, .lang-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+    .lang-input {
+      appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' stroke='%238a8680' stroke-width='1.5' fill='none' stroke-linecap='round'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+      cursor: pointer;
+    }
+  
+    .lang-fields {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 12px;
+      align-items: end;
+    }
+    .swap-btn {
+      background: #fff;
+      border: 1px solid #e3ded6;
+      border-radius: 8px;
+      width: 42px;
+      height: 42px;
+      font-size: 16px;
+      color: #6a6660;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .swap-btn:hover {
+      border-color: var(--accent);
+      color: #1a1a1a;
+      background: var(--accent-bg);
+      transform: rotate(180deg);
+    }
+  
+    .theme-picker {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .theme-card {
+      background: #fff;
+      border: 1px solid #e3ded6;
+      border-radius: 8px;
+      padding: 12px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .theme-card:hover { border-color: #c4b8a8; }
+    .theme-card.active {
+      border-color: #1a1a1a;
+      background: var(--accent-bg);
+    }
+    .theme-card-swatch {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+    }
+    .theme-card-name {
+      font-size: 12px;
+      color: #2a2826;
+      font-weight: 500;
+    }
+    .swatch-warm { background: linear-gradient(135deg, var(--bg) 50%, var(--accent) 50%); transition: background 0.3s; }
+    .swatch-dark { background: linear-gradient(135deg, #1a1a1c 50%, #e6a85c 50%); }
+    .swatch-y2k { background: linear-gradient(135deg, #ff6ec7 50%, #00d4ff 50%); }
+    .swatch-terminal { background: linear-gradient(135deg, #000 50%, #00ff41 50%); }
+  
+    /* Preview panel */
+    .composer-preview {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .preview-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: #6a6660;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .preview-frame {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+      background: #fff;
+      transition: all 0.3s ease;
+    }
+    .preview-chrome {
+      background: #ebe8e3;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.3s;
+    }
+    .preview-dots { display: flex; gap: 4px; }
+    .preview-dots span {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #cfc9c1;
+      transition: background 0.3s;
+    }
+    .preview-urlbar {
+      flex: 1;
+      background: #fff;
+      border-radius: 4px;
+      padding: 3px 8px;
+      font-size: 10px;
+      color: #6a6660;
+      font-family: 'SF Mono', Menlo, monospace;
+      transition: all 0.3s;
+    }
+    .preview-site {
+      padding: 20px;
+      transition: all 0.3s;
+    }
+    .preview-wordmark {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 16px;
+      transition: color 0.3s;
+    }
+    .preview-dot { color: var(--accent); transition: color 0.3s; }
+    .preview-langs {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .preview-lang {
+      flex: 1;
+      background: #f7f4ef;
+      border: 1px solid #e3ded6;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 11px;
+      transition: all 0.3s;
+    }
+    .preview-swap {
+      color: #8a8680;
+      font-size: 12px;
+    }
+    .preview-panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .preview-panel {
+      background: #fff;
+      border: 1px solid #e3ded6;
+      border-radius: 6px;
+      padding: 12px;
+      min-height: 80px;
+      font-size: 12px;
+      line-height: 1.4;
+      color: #2a2826;
+      transition: all 0.3s;
+      word-break: break-word;
+    }
+    .preview-panel.translated { background: #faf8f4; }
+    .preview-placeholder { color: #c4b8a8; }
+  
+    /* Theme variants applied to preview */
+    .preview-frame.theme-warm { /* default */ }
+  
+    .preview-frame.theme-dark { background: #1a1a1c; }
+    .preview-frame.theme-dark .preview-chrome { background: #232326; }
+    .preview-frame.theme-dark .preview-dots span { background: #3a3a3e; }
+    .preview-frame.theme-dark .preview-urlbar { background: #0f0f10; color: #8a8a8c; }
+    .preview-frame.theme-dark .preview-wordmark { color: #e6a85c; }
+    .preview-frame.theme-dark .preview-dot { color: #ededed; }
+    .preview-frame.theme-dark .preview-lang { background: #232326; border-color: #2e2e32; color: #ededed; }
+    .preview-frame.theme-dark .preview-panel { background: #1a1a1c; border-color: #2e2e32; color: #ededed; }
+    .preview-frame.theme-dark .preview-panel.translated { background: #15151a; }
+    .preview-frame.theme-dark .preview-placeholder { color: #5a5a5c; }
+  
+    .preview-frame.theme-y2k { background: #fffacd; box-shadow: 4px 4px 0 #1a0033, 8px 8px 0 #ff00aa; border-radius: 0; }
+    .preview-frame.theme-y2k .preview-chrome { background: #c0c0ff; }
+    .preview-frame.theme-y2k .preview-dots span { background: #ff00aa; border-radius: 0; }
+    .preview-frame.theme-y2k .preview-urlbar { color: #1a0033; border-radius: 0; }
+    .preview-frame.theme-y2k .preview-site { font-family: 'Comic Sans MS', cursive; }
+    .preview-frame.theme-y2k .preview-wordmark { color: #ff00aa; font-family: 'Comic Sans MS', cursive; }
+    .preview-frame.theme-y2k .preview-dot { color: #1a0033; }
+    .preview-frame.theme-y2k .preview-lang { background: #e0f7ff; border: 1px solid #1a0033; border-radius: 0; color: #1a0033; }
+    .preview-frame.theme-y2k .preview-panel { background: #fff; border: 1px solid #1a0033; border-radius: 0; color: #1a0033; }
+    .preview-frame.theme-y2k .preview-panel.translated { background: #ffe0f5; }
+  
+    .preview-frame.theme-terminal { background: #000; box-shadow: 0 0 24px rgba(0, 255, 65, 0.25), inset 0 0 0 1px #00ff41; border-radius: 0; }
+    .preview-frame.theme-terminal .preview-chrome { background: #001100; border-bottom: 1px solid #00ff41; }
+    .preview-frame.theme-terminal .preview-dots span { background: #00ff41; border-radius: 0; box-shadow: 0 0 4px #00ff41; }
+    .preview-frame.theme-terminal .preview-urlbar { background: #000; color: #00ff41; font-family: 'SF Mono', monospace; border-radius: 0; }
+    .preview-frame.theme-terminal .preview-site { font-family: 'SF Mono', 'Courier New', monospace; }
+    .preview-frame.theme-terminal .preview-wordmark { color: #00ff41; font-family: 'SF Mono', monospace; }
+    .preview-frame.theme-terminal .preview-dot { color: #00ff41; }
+    .preview-frame.theme-terminal .preview-lang { background: #001100; border: 1px solid #00ff41; border-radius: 0; color: #00ff41; }
+    .preview-frame.theme-terminal .preview-panel { background: #000; border: 1px solid #00ff41; border-radius: 0; color: #00ff41; }
+    .preview-frame.theme-terminal .preview-panel.translated { background: #000; }
+    .preview-frame.theme-terminal .preview-placeholder { color: #004411; }
+  
+    /* Share section */
+    .share-section {
+      background: #fff;
+      border: 1px solid #e3ded6;
+      border-radius: 12px;
+      padding: 20px 24px;
+    }
+    .share-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .share-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .action-btn {
+      background: #fff;
+      border: 1px solid #e3ded6;
+      border-radius: 8px;
+      width: 44px;
+      height: 44px;
+      cursor: pointer;
+      color: #6a6660;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .action-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-bg);
+    }
+    .share-url {
+      flex: 1;
+      font-family: 'SF Mono', Menlo, monospace;
+      font-size: 13px;
+      color: #2a2826;
+      background: #f7f4ef;
+      border: 1px solid #e3ded6;
+      border-radius: 8px;
+      padding: 12px 14px;
+      transition: border-color 0.15s;
+    }
+    .share-url:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+    .copy-btn {
+      background: #1a1a1a;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 24px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+      min-width: 100px;
+    }
+    .copy-btn:hover { background: #000; }
+    .copy-btn.copied { background: var(--copy-success-bg); color: var(--copy-success-text); }
+    .share-hint {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #a8a49e;
+    }
+  
+    /* Recent links */
+    .recent-section {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid #ede8df;
+    }
+    .recent-label {
+      font-size: 11px;
+      color: #8a8680;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+    }
+    .recent-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .recent-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #6a6660;
+      transition: background 0.15s;
+      cursor: pointer;
+    }
+    .recent-item:hover { background: #f7f4ef; }
+    .recent-text {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .recent-meta {
+      font-size: 10px;
+      color: #a8a49e;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      flex-shrink: 0;
+    }
+    .recent-copy {
+      background: transparent;
+      border: none;
+      color: #8a8680;
+      cursor: pointer;
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-family: inherit;
+    }
+    .recent-copy:hover { color: var(--accent); background: var(--accent-bg); }
+  
+    /* QR modal */
+    .qr-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 24px;
+      backdrop-filter: blur(4px);
+    }
+    .qr-modal.visible { display: flex; }
+    .qr-modal-content {
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 320px;
+      width: 100%;
+      text-align: center;
+    }
+    .qr-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: #6a6660;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 500;
+    }
+    .qr-close {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 24px;
+      line-height: 1;
+      color: #8a8680;
+      padding: 0 4px;
+    }
+    .qr-canvas {
+      background: #fff;
+      padding: 12px;
+      border-radius: 8px;
+      display: inline-block;
+    }
+    .qr-canvas svg, .qr-canvas img { display: block; max-width: 100%; height: auto; }
+    .qr-caption {
+      margin-top: 14px;
+      font-size: 11px;
+      color: #a8a49e;
+      word-break: break-all;
+      font-family: 'SF Mono', Menlo, monospace;
+    }
+  
+    .page-footer {
+      margin-top: 48px;
+      text-align: center;
+      font-size: 11px;
+      color: #a8a49e;
+    }
+    .footer-text { margin-bottom: 6px; }
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      align-items: center;
+    }
+    .footer-link {
+      color: #a8a49e;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .footer-link:hover { color: var(--accent); }
+    .footer-sep { color: #d6d0c5; }
+  
+    @media (max-width: 760px) {
+      #app { padding: 32px 20px 48px; }
+      .composer-grid { grid-template-columns: 1fr; gap: 32px; }
+      .share-row { flex-direction: column; align-items: stretch; }
+      .copy-btn { min-width: unset; }
+      .theme-picker { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+  
+  <script>
+  (function() {
+    const LANG_NAMES = {
+      auto: 'Detect language',
+      en: 'English', es: 'Spanish', pt: 'Portuguese', fr: 'French',
+      de: 'German', it: 'Italian', ja: 'Japanese', ko: 'Korean',
+      zh: 'Chinese', ru: 'Russian', ar: 'Arabic'
+    };
+  
+    const REVEAL_LINES = [
+      "You're welcome.",
+      "There. Was that so hard?",
+      "Next time, try this yourself.",
+      "Imagine having access to the entire internet.",
+      "We believe in you. Eventually.",
+      "Hope this helps! 🙂",
+      "You watched this whole thing instead of just translating it.",
+      "Bookmark it. Please.",
+      "Glad we could help. We shouldn't have had to.",
+      "And that's how the internet works."
+    ];
+  
+    const TAGLINE_TAUNTS = [
+      "Mock with care.",
+      "Send wisely.",
+      "Use your powers responsibly.",
+      "They probably deserve it.",
+      "Some friendships survive this. Some don't.",
+      "Pettiness, but make it shareable."
+    ];
+  
+    const textInput = document.getElementById('textInput');
+    const charCount = document.getElementById('charCount');
+    const srcSelect = document.getElementById('srcLangSelect');
+    const tgtSelect = document.getElementById('tgtLangSelect');
+    const swapBtn = document.getElementById('swapBtn');
+    const previewFrame = document.getElementById('previewFrame');
+    const previewSrc = document.getElementById('previewSrc');
+    const previewTgt = document.getElementById('previewTgt');
+    const previewSrcText = document.getElementById('previewSrcText');
+    const shareUrl = document.getElementById('shareUrl');
+    const copyBtn = document.getElementById('copyBtn');
+    const shareBtn = document.getElementById('shareBtn');
+    const qrBtn = document.getElementById('qrBtn');
+    const shareHint = document.getElementById('shareHint');
+    const snarkPreview = document.getElementById('snarkPreview');
+    const snarkShuffle = document.getElementById('snarkShuffle');
+    const taglineTaunt = document.getElementById('taglineTaunt');
+  
+    let currentTheme = 'dark';
+    let lastSnark = null;
+    let typingAnimationId = null;
+  
+    // Random tagline taunt on load
+    taglineTaunt.textContent = TAGLINE_TAUNTS[Math.floor(Math.random() * TAGLINE_TAUNTS.length)];
+  
+    function shuffleSnark() {
+      const pool = REVEAL_LINES.filter(l => l !== lastSnark);
+      lastSnark = pool[Math.floor(Math.random() * pool.length)];
+      snarkPreview.textContent = '"' + lastSnark + '"';
+    }
+    shuffleSnark();
+    snarkShuffle.addEventListener('click', shuffleSnark);
+  
+    function updateCharCount() {
+      const len = textInput.value.length;
+      charCount.textContent = len;
+      charCount.parentElement.classList.toggle('warning', len > 180);
+    }
+  
+    // Animated text in preview — feels like typing
+    function animatePreviewText(text) {
+      if (typingAnimationId) {
+        clearTimeout(typingAnimationId);
+        typingAnimationId = null;
+      }
+      if (!text) {
+        previewSrcText.innerHTML = '<span class="preview-placeholder">Your text appears here</span>';
+        return;
+      }
+      // Show full text on rapid input — animation only feels right when there's a pause
+      // Diff between current and target text, type the diff character by character
+      const current = previewSrcText.textContent || '';
+      if (text.startsWith(current) && text.length > current.length) {
+        // Append new chars one by one
+        let i = current.length;
+        const step = () => {
+          if (i >= text.length) return;
+          previewSrcText.textContent = text.substring(0, i + 1);
+          i++;
+          typingAnimationId = setTimeout(step, 30);
+        };
+        step();
+      } else {
+        // Non-append change (delete, paste, etc) — just set
+        previewSrcText.textContent = text;
+      }
+    }
+  
+    function updatePreviewText() {
+      const text = textInput.value.trim();
+      animatePreviewText(text);
+    }
+  
+    function updatePreviewLangs() {
+      previewSrc.textContent = LANG_NAMES[srcSelect.value];
+      previewTgt.textContent = LANG_NAMES[tgtSelect.value];
+    }
+  
+    function buildUrl() {
+      const text = textInput.value.trim();
+      const src = srcSelect.value;
+      const tgt = tgtSelect.value;
+      const base = 'https://lmgttfy.com';
+      if (!text) return `${base}/${src}/${tgt}/`;
+      const encoded = encodeURIComponent(text);
+      let url = `${base}/${src}/${tgt}/${encoded}`;
+      if (currentTheme !== 'warm') url += `?theme=${currentTheme}`;
+      return url;
+    }
+  
+    function updateUrl() {
+      const text = textInput.value.trim();
+      shareUrl.value = buildUrl();
+      if (!text) {
+        shareHint.textContent = 'Add some text to mock someone';
+      } else {
+        shareHint.textContent = 'Your shareable link updates as you type · ⌘+Enter to copy';
+      }
+    }
+  
+    function setTheme(theme) {
+      currentTheme = theme;
+      document.querySelectorAll('.theme-card').forEach(card => {
+        card.classList.toggle('active', card.dataset.theme === theme);
+      });
+      previewFrame.className = 'preview-frame theme-' + theme;
+      updateUrl();
+    }
+  
+    textInput.addEventListener('input', () => {
+      updateCharCount();
+      updatePreviewText();
+      updateUrl();
+    });
+  
+    srcSelect.addEventListener('change', () => {
+      updatePreviewLangs();
+      updateUrl();
+    });
+    tgtSelect.addEventListener('change', () => {
+      updatePreviewLangs();
+      updateUrl();
+    });
+  
+    swapBtn.addEventListener('click', () => {
+      if (srcSelect.value === 'auto') return;
+      const tmp = srcSelect.value;
+      srcSelect.value = tgtSelect.value;
+      tgtSelect.value = tmp;
+      updatePreviewLangs();
+      updateUrl();
+    });
+  
+    document.querySelectorAll('.theme-card').forEach(card => {
+      card.addEventListener('click', () => setTheme(card.dataset.theme));
+    });
+  
+    // Example chips
+    document.querySelectorAll('.example-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        textInput.value = chip.dataset.text;
+        srcSelect.value = chip.dataset.src;
+        tgtSelect.value = chip.dataset.tgt;
+        updateCharCount();
+        updatePreviewText();
+        updatePreviewLangs();
+        updateUrl();
+      });
+    });
+  
+    // ===== Recent links (in-memory only, no localStorage in artifacts) =====
+    let recentLinks = [];
+    const recentSection = document.getElementById('recentSection');
+    const recentList = document.getElementById('recentList');
+  
+    function renderRecent() {
+      if (recentLinks.length === 0) {
+        recentSection.style.display = 'none';
+        return;
+      }
+      recentSection.style.display = 'block';
+      recentList.innerHTML = '';
+      recentLinks.forEach((entry) => {
+        const item = document.createElement('div');
+        item.className = 'recent-item';
+        const truncated = entry.text.length > 40 ? entry.text.substring(0, 40) + '…' : entry.text;
+        item.innerHTML = `
+          <span class="recent-text">"${escapeHtml(truncated)}" — ${entry.src} → ${entry.tgt}</span>
+          <span class="recent-meta">${entry.theme}</span>
+          <button class="recent-copy" data-url="${escapeAttr(entry.url)}">Copy</button>
+        `;
+        item.addEventListener('click', (e) => {
+          if (e.target.classList.contains('recent-copy')) {
+            navigator.clipboard.writeText(entry.url).catch(() => {});
+            const btn = e.target;
+            const orig = btn.textContent;
+            btn.textContent = 'Copied!';
+            setTimeout(() => { btn.textContent = orig; }, 1200);
+          } else {
+            // Click the row → load it back into the form
+            textInput.value = entry.text;
+            srcSelect.value = entry.srcCode;
+            tgtSelect.value = entry.tgtCode;
+            setTheme(entry.theme);
+            updateCharCount();
+            updatePreviewText();
+            updatePreviewLangs();
+            updateUrl();
+          }
+        });
+        recentList.appendChild(item);
+      });
+    }
+  
+    function escapeHtml(s) {
+      return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+    function escapeAttr(s) {
+      return s.replace(/"/g, '&quot;');
+    }
+  
+    function recordRecent() {
+      const text = textInput.value.trim();
+      if (!text) return;
+      const entry = {
+        url: buildUrl(),
+        text: text,
+        src: LANG_NAMES[srcSelect.value],
+        tgt: LANG_NAMES[tgtSelect.value],
+        srcCode: srcSelect.value,
+        tgtCode: tgtSelect.value,
+        theme: currentTheme
+      };
+      // Dedupe: if same URL already in list, remove it first
+      recentLinks = recentLinks.filter(e => e.url !== entry.url);
+      recentLinks.unshift(entry);
+      if (recentLinks.length > 5) recentLinks = recentLinks.slice(0, 5);
+      renderRecent();
+    }
+  
+    // ===== Copy button =====
+    async function doCopy() {
+      if (!textInput.value.trim()) {
+        shareHint.textContent = "You forgot the text. Classic.";
+        shareHint.style.color = '#1a1a1a';
+        shareHint.style.fontWeight = '500';
+        setTimeout(() => { shareHint.style.color = ''; shareHint.style.fontWeight = ''; updateUrl(); }, 2000);
+        return false;
+      }
+      try {
+        await navigator.clipboard.writeText(shareUrl.value);
+        const original = copyBtn.textContent;
+        copyBtn.textContent = 'Copied!';
+        copyBtn.classList.add('copied');
+        recordRecent();
+        setTimeout(() => {
+          copyBtn.textContent = original;
+          copyBtn.classList.remove('copied');
+        }, 1800);
+        return true;
+      } catch (e) {
+        shareUrl.select();
+        return false;
+      }
+    }
+    copyBtn.addEventListener('click', doCopy);
+  
+    // ===== Keyboard shortcut: Cmd/Ctrl+Enter to copy =====
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault();
+        doCopy();
+      }
+    });
+  
+    // ===== Native Share API (mobile-only really) =====
+    if (navigator.share) {
+      shareBtn.style.display = 'flex';
+      shareBtn.addEventListener('click', async () => {
+        if (!textInput.value.trim()) {
+          shareHint.textContent = "You forgot the text. Classic.";
+          shareHint.style.color = '#1a1a1a';
+          setTimeout(() => { shareHint.style.color = ''; updateUrl(); }, 2000);
+          return;
+        }
+        try {
+          await navigator.share({
+            title: 'Let Me Google Translate That For You',
+            text: 'I made you something:',
+            url: shareUrl.value
+          });
+          recordRecent();
+        } catch (e) {
+          // User cancelled — silent
+        }
+      });
+    }
+  
+    // ===== QR code =====
+    const qrModal = document.getElementById('qrModal');
+    const qrCanvas = document.getElementById('qrCanvas');
+    const qrCaption = document.getElementById('qrCaption');
+    const qrClose = document.getElementById('qrClose');
+  
+    qrBtn.addEventListener('click', () => {
+      if (!textInput.value.trim()) {
+        shareHint.textContent = "You forgot the text. Classic.";
+        shareHint.style.color = '#1a1a1a';
+        setTimeout(() => { shareHint.style.color = ''; updateUrl(); }, 2000);
+        return;
+      }
+      // Use a public QR API — no library needed
+      const encoded = encodeURIComponent(shareUrl.value);
+      const accentColor = getComputedStyle(document.body).getPropertyValue('--accent').trim().replace('#', '');
+      qrCanvas.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encoded}&color=${accentColor}&bgcolor=ffffff" alt="QR code" width="240" height="240" />`;
+      qrCaption.textContent = shareUrl.value;
+      qrModal.classList.add('visible');
+    });
+    qrClose.addEventListener('click', () => qrModal.classList.remove('visible'));
+    qrModal.addEventListener('click', (e) => {
+      if (e.target === qrModal) qrModal.classList.remove('visible');
+    });
+  
+    // ===== Palette switcher =====
+    const PALETTES = ['chartreuse', 'coral', 'indigo', 'magenta', 'purple', 'terracotta'];
+    function setPalette(palette) {
+      PALETTES.forEach(p => document.body.classList.remove('palette-' + p));
+      if (palette !== 'magenta') document.body.classList.add('palette-' + palette);
+      document.querySelectorAll('.palette-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.palette === palette);
+      });
+    }
+    document.querySelectorAll('.palette-btn').forEach(btn => {
+      btn.addEventListener('click', () => setPalette(btn.dataset.palette));
+    });
+  
+    // Init
+    setTheme('dark');
+    updateCharCount();
+    updatePreviewText();
+    updatePreviewLangs();
+    updateUrl();
+  })();
+  </script>

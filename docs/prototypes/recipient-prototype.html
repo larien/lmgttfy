@@ -1,0 +1,777 @@
+<div id="app">
+    <div class="browser">
+      <div class="browser-chrome">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <div class="urlbar">translate.lmgttfy.com</div>
+      </div>
+      <div class="site">
+        <div class="site-header">
+          <div class="wordmark">lmgttfy<span class="dot">.</span>translate</div>
+        </div>
+        <div class="translator">
+          <div class="lang-row">
+            <div class="lang-select" id="srcLang">
+              <span class="lang-label">Detect language</span>
+              <span class="caret">▾</span>
+            </div>
+            <div class="swap">⇄</div>
+            <div class="lang-select" id="tgtLang">
+              <span class="lang-label">English</span>
+              <span class="caret">▾</span>
+            </div>
+          </div>
+          <div class="panels">
+            <div class="panel">
+              <div class="panel-text" id="srcText"></div>
+              <div class="panel-caret" id="srcCaret">|</div>
+            </div>
+            <div class="panel translated">
+              <div class="panel-text" id="tgtText"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cursor" id="cursor"></div>
+      <div class="dropdown" id="dropdown">
+        <div class="dd-item" data-lang="English">English</div>
+        <div class="dd-item" data-lang="Spanish">Spanish</div>
+        <div class="dd-item" data-lang="Portuguese">Portuguese</div>
+        <div class="dd-item" data-lang="French">French</div>
+        <div class="dd-item" data-lang="German">German</div>
+        <div class="dd-item" data-lang="Japanese">Japanese</div>
+        <div class="dd-item" data-lang="Italian">Italian</div>
+        <div class="dd-item" data-lang="Korean">Korean</div>
+      </div>
+    </div>
+  
+    <button class="skip" id="skipBtn"></button>
+  
+    <div class="reveal" id="reveal">
+      <div class="reveal-card">
+        <div class="reveal-line" id="revealLine">You're welcome.</div>
+        <div class="reveal-hint">tap line to shuffle</div>
+        <a class="reveal-btn" id="revealBtn" target="_blank" rel="noopener noreferrer">Open Google Translate</a>
+        <div class="theme-row">
+          <span class="theme-row-label">theme</span>
+          <div class="theme-swatches">
+            <button class="swatch swatch-warm" data-theme="warm" title="Warm"></button>
+            <button class="swatch swatch-dark" data-theme="dark" title="Dark"></button>
+            <button class="swatch swatch-y2k" data-theme="y2k" title="Y2K"></button>
+            <button class="swatch swatch-terminal" data-theme="terminal" title="Terminal"></button>
+          </div>
+        </div>
+        <div class="reveal-disclaimer">Not affiliated with Google. We just think you should've used it.</div>
+      </div>
+    </div>
+  </div>
+  
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+  
+    /* Theme variables — default is "warm" */
+    :root {
+      --bg: #f4f1ec;
+      --text: #2a2826;
+      --text-muted: #8a8680;
+      --text-faint: #a8a49e;
+      --accent: #c44a2e;
+      --browser-bg: #fff;
+      --browser-shadow: 0 20px 60px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06);
+      --chrome-bg: #ebe8e3;
+      --chrome-border: #ddd8d1;
+      --dot-bg: #cfc9c1;
+      --urlbar-bg: #fff;
+      --urlbar-text: #6a6660;
+      --panel-bg: #fff;
+      --panel-translated-bg: #faf8f4;
+      --panel-border: #e3ded6;
+      --select-bg: #f7f4ef;
+      --select-hover: #efebe4;
+      --reveal-bg: rgba(244, 241, 236, 0.96);
+      --reveal-btn-bg: #2a2826;
+      --reveal-btn-hover: #1a1816;
+      --reveal-btn-text: #fff;
+      --skip-bg: rgba(0,0,0,0.04);
+      --skip-border: rgba(0,0,0,0.08);
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'SF Mono', Menlo, monospace;
+      --font-display: 'Inter', -apple-system, sans-serif;
+      --radius: 8px;
+      --radius-lg: 12px;
+      --cursor-color: black;
+      --cursor-stroke: white;
+    }
+  
+    /* Dark theme */
+    body.theme-dark {
+      --bg: #0f0f10;
+      --text: #ededed;
+      --text-muted: #8a8a8c;
+      --text-faint: #5a5a5c;
+      --accent: #e6a85c;
+      --browser-bg: #1a1a1c;
+      --browser-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 4px 12px rgba(0,0,0,0.3);
+      --chrome-bg: #232326;
+      --chrome-border: #2e2e32;
+      --dot-bg: #3a3a3e;
+      --urlbar-bg: #0f0f10;
+      --urlbar-text: #8a8a8c;
+      --panel-bg: #1a1a1c;
+      --panel-translated-bg: #15151700;
+      --panel-border: #2e2e32;
+      --select-bg: #232326;
+      --select-hover: #2a2a2e;
+      --reveal-bg: rgba(15, 15, 16, 0.96);
+      --reveal-btn-bg: #ededed;
+      --reveal-btn-hover: #fff;
+      --reveal-btn-text: #0f0f10;
+      --skip-bg: rgba(255,255,255,0.04);
+      --skip-border: rgba(255,255,255,0.08);
+      --cursor-color: white;
+      --cursor-stroke: black;
+    }
+  
+    /* Y2K theme */
+    body.theme-y2k {
+      --bg: linear-gradient(135deg, #ff6ec7 0%, #00d4ff 100%);
+      --text: #1a0033;
+      --text-muted: #6a3a8a;
+      --text-faint: #9a7aaa;
+      --accent: #ff00aa;
+      --browser-bg: #fffacd;
+      --browser-shadow: 6px 6px 0 #1a0033, 12px 12px 0 #ff00aa;
+      --chrome-bg: #c0c0ff;
+      --chrome-border: #1a0033;
+      --dot-bg: #ff00aa;
+      --urlbar-bg: #fff;
+      --urlbar-text: #1a0033;
+      --panel-bg: #fff;
+      --panel-translated-bg: #ffe0f5;
+      --panel-border: #1a0033;
+      --select-bg: #e0f7ff;
+      --select-hover: #ffd6f5;
+      --reveal-bg: rgba(255, 110, 199, 0.92);
+      --reveal-btn-bg: #ff00aa;
+      --reveal-btn-hover: #cc0088;
+      --reveal-btn-text: #fff;
+      --skip-bg: rgba(255,255,255,0.7);
+      --skip-border: #1a0033;
+      --font-body: 'Comic Sans MS', 'Comic Sans', cursive;
+      --font-mono: 'Courier New', monospace;
+      --font-display: 'Comic Sans MS', cursive;
+      --radius: 0;
+      --radius-lg: 0;
+      --cursor-color: #ff00aa;
+      --cursor-stroke: white;
+    }
+  
+    /* Terminal theme */
+    body.theme-terminal {
+      --bg: #000;
+      --text: #00ff41;
+      --text-muted: #008822;
+      --text-faint: #004411;
+      --accent: #00ff41;
+      --browser-bg: #000;
+      --browser-shadow: 0 0 40px rgba(0, 255, 65, 0.2), inset 0 0 0 1px #00ff41;
+      --chrome-bg: #001100;
+      --chrome-border: #00ff41;
+      --dot-bg: #00ff41;
+      --urlbar-bg: #000;
+      --urlbar-text: #00ff41;
+      --panel-bg: #000;
+      --panel-translated-bg: #000;
+      --panel-border: #00ff41;
+      --select-bg: #001100;
+      --select-hover: #002200;
+      --reveal-bg: rgba(0, 0, 0, 0.96);
+      --reveal-btn-bg: #00ff41;
+      --reveal-btn-hover: #44ff77;
+      --reveal-btn-text: #000;
+      --skip-bg: transparent;
+      --skip-border: #00ff41;
+      --font-body: 'SF Mono', 'Courier New', monospace;
+      --font-mono: 'SF Mono', 'Courier New', monospace;
+      --font-display: 'SF Mono', 'Courier New', monospace;
+      --radius: 0;
+      --radius-lg: 0;
+      --cursor-color: #00ff41;
+      --cursor-stroke: #000;
+    }
+  
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+      user-select: none;
+      cursor: default;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .browser {
+      position: relative;
+      width: 100%;
+      max-width: 880px;
+      background: var(--browser-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--browser-shadow);
+      overflow: hidden;
+      transition: background 0.3s ease, box-shadow 0.3s ease, border-radius 0.3s ease;
+    }
+    .browser-chrome {
+      background: var(--chrome-bg);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      border-bottom: 1px solid var(--chrome-border);
+    }
+    .dots { display: flex; gap: 6px; }
+    .dots span {
+      width: 11px; height: 11px; border-radius: 50%;
+      background: var(--dot-bg);
+    }
+    body.theme-y2k .dots span { border-radius: 0; }
+    body.theme-terminal .dots span { border-radius: 0; box-shadow: 0 0 4px var(--accent); }
+    .urlbar {
+      flex: 1;
+      background: var(--urlbar-bg);
+      border-radius: var(--radius);
+      padding: 5px 12px;
+      font-size: 12px;
+      color: var(--urlbar-text);
+      font-family: var(--font-mono);
+    }
+    body.theme-terminal .urlbar::before { content: "> "; }
+    .site { padding: 32px; min-height: 360px; }
+    .site-header { margin-bottom: 28px; }
+    .wordmark {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--accent);
+      font-family: var(--font-display);
+    }
+    .wordmark .dot { color: var(--text); }
+    body.theme-y2k .wordmark { font-weight: bold; text-shadow: 2px 2px 0 #fff; }
+    body.theme-terminal .wordmark::before { content: "[ "; }
+    body.theme-terminal .wordmark::after { content: " ]"; }
+    .lang-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .lang-select {
+      flex: 1;
+      background: var(--select-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: background 0.15s;
+      color: var(--text);
+    }
+    .lang-select:hover { background: var(--select-hover); }
+    .lang-select.active { background: var(--select-hover); border-color: var(--accent); }
+    .lang-label { color: var(--text); }
+    .caret { color: var(--text-muted); font-size: 10px; }
+    .swap {
+      color: var(--text-muted);
+      font-size: 18px;
+      padding: 0 4px;
+    }
+    .panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius);
+      padding: 16px;
+      min-height: 140px;
+      font-size: 16px;
+      line-height: 1.5;
+      position: relative;
+      color: var(--text);
+    }
+    .panel.translated { background: var(--panel-translated-bg); }
+    .panel-text { white-space: pre-wrap; }
+    .panel-caret {
+      display: none;
+      position: absolute;
+      color: var(--text);
+      font-weight: 300;
+      animation: blink 1s step-end infinite;
+    }
+    .panel-caret.visible { display: inline; }
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+    .cursor {
+      position: absolute;
+      width: 18px;
+      height: 24px;
+      pointer-events: none;
+      z-index: 100;
+      background-size: contain;
+      background-repeat: no-repeat;
+      transition: transform 0.05s linear;
+      left: 0;
+      top: 0;
+    }
+    .dropdown {
+      position: absolute;
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      padding: 6px 0;
+      min-width: 200px;
+      display: none;
+      z-index: 50;
+      color: var(--text);
+    }
+    .dropdown.visible { display: block; }
+    .dd-item {
+      padding: 8px 16px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .dd-item:hover, .dd-item.highlighted { background: var(--select-hover); }
+    .skip {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--skip-bg);
+      border: 1px solid var(--skip-border);
+      color: var(--text-muted);
+      padding: 8px 14px;
+      border-radius: var(--radius);
+      font-size: 12px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+      z-index: 200;
+    }
+    .skip:hover { color: var(--text); }
+    .reveal {
+      position: fixed;
+      inset: 0;
+      background: var(--reveal-bg);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 300;
+      padding: 24px;
+      backdrop-filter: blur(8px);
+    }
+    .reveal.visible {
+      display: flex;
+      animation: fadeIn 0.4s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .reveal-card { text-align: center; max-width: 520px; }
+    .reveal-line {
+      font-size: 36px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      color: var(--text);
+      font-family: var(--font-display);
+    }
+    .reveal-line:hover { opacity: 0.7; }
+    .reveal-hint { font-size: 12px; color: var(--text-muted); margin-bottom: 32px; }
+    .reveal-btn {
+      display: inline-block;
+      background: var(--reveal-btn-bg);
+      color: var(--reveal-btn-text);
+      padding: 12px 28px;
+      border-radius: var(--radius);
+      font-size: 15px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: transform 0.1s, background 0.15s;
+    }
+    .reveal-btn:hover { background: var(--reveal-btn-hover); transform: translateY(-1px); }
+    .theme-row {
+      margin-top: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    .theme-row-label {
+      font-size: 11px;
+      color: var(--text-faint);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .theme-swatches {
+      display: flex;
+      gap: 8px;
+    }
+    .swatch {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      padding: 0;
+      transition: transform 0.1s, border-color 0.15s;
+      background-clip: padding-box;
+    }
+    .swatch:hover { transform: scale(1.1); }
+    .swatch.active { border-color: var(--text); }
+    .swatch-warm { background: linear-gradient(135deg, #f4f1ec 50%, #c44a2e 50%); }
+    .swatch-dark { background: linear-gradient(135deg, #1a1a1c 50%, #e6a85c 50%); }
+    .swatch-y2k { background: linear-gradient(135deg, #ff6ec7 50%, #00d4ff 50%); }
+    .swatch-terminal { background: linear-gradient(135deg, #000 50%, #00ff41 50%); }
+    .reveal-disclaimer { margin-top: 32px; font-size: 11px; color: var(--text-faint); }
+  
+    @media (max-width: 600px) {
+      .panels { grid-template-columns: 1fr; }
+      .site { padding: 20px; }
+      .reveal-line { font-size: 28px; }
+    }
+  </style>
+  
+  <script>
+  (function() {
+    const SOURCE_TEXT = "I need this translated by Friday";
+    const TARGET_TEXT = "Preciso disso traduzido até sexta-feira";
+    const SOURCE_LANG = "English";
+    const TARGET_LANG = "Portuguese";
+  
+    const REVEAL_LINES = [
+      "You're welcome.",
+      "There. Was that so hard?",
+      "Next time, try this yourself.",
+      "Imagine having access to the entire internet.",
+      "We believe in you. Eventually.",
+      "Hope this helps! 🙂",
+      "You watched this whole thing instead of just translating it.",
+      "Bookmark it. Please.",
+      "Glad we could help. We shouldn't have had to.",
+      "This took longer to make than for you to do it yourself.",
+      "Mission accomplished. Sort of.",
+      "Crisis averted. Effort: minimal.",
+      "There you go, champ.",
+      "And that's how the internet works."
+    ];
+  
+    const SKIP_LINES = [
+      "Skip — I understand how websites work",
+      "Skip — I'll pretend I learned something",
+      "Skip to the part where you're welcome",
+      "Skip — my time is valuable, unlike my effort",
+      "Skip — yes, I get it, I'm capable"
+    ];
+  
+    // Utility: random in range
+    const rand = (min, max) => Math.random() * (max - min) + min;
+    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+  
+    // Cursor element + theme handling
+    const cursor = document.getElementById('cursor');
+    let cursorX = 100, cursorY = 100;
+  
+    const THEMES = ['warm', 'dark', 'y2k', 'terminal'];
+    let currentTheme = 'warm';
+  
+    // Sender-chosen theme (would come from URL in production)
+    // Try ?theme=y2k or default to warm
+    const urlParams = new URLSearchParams(window.location.search);
+    const senderTheme = urlParams.get('theme');
+    if (senderTheme && THEMES.includes(senderTheme)) {
+      currentTheme = senderTheme;
+    }
+  
+    function setCursorSvg() {
+      const styles = getComputedStyle(document.body);
+      const color = styles.getPropertyValue('--cursor-color').trim() || 'black';
+      const stroke = styles.getPropertyValue('--cursor-stroke').trim() || 'white';
+      const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 24'><path d='M2 2 L2 18 L6 14 L9 21 L11 20 L8 13 L14 13 Z' fill='${color}' stroke='${stroke}' stroke-width='1.2' stroke-linejoin='round'/></svg>`;
+      cursor.style.backgroundImage = `url("data:image/svg+xml;utf8,${encodeURIComponent(svg)}")`;
+    }
+  
+    function applyTheme(theme) {
+      THEMES.forEach(t => document.body.classList.remove('theme-' + t));
+      if (theme !== 'warm') document.body.classList.add('theme-' + theme);
+      currentTheme = theme;
+      setCursorSvg();
+      updateActiveSwatch();
+    }
+  
+    function updateActiveSwatch() {
+      document.querySelectorAll('.swatch').forEach(s => {
+        s.classList.toggle('active', s.dataset.theme === currentTheme);
+      });
+    }
+  
+    document.querySelectorAll('.swatch').forEach(swatch => {
+      swatch.addEventListener('click', () => {
+        applyTheme(swatch.dataset.theme);
+      });
+    });
+  
+    applyTheme(currentTheme);
+  
+    function setCursor(x, y) {
+      cursorX = x; cursorY = y;
+      cursor.style.transform = `translate(${x}px, ${y}px)`;
+    }
+  
+    // Initial position
+    setCursor(60, 80);
+  
+    async function moveCursorTo(targetX, targetY, duration = 700) {
+      // Slight overshoot for human feel
+      const overshoot = Math.random() < 0.35;
+      const startX = cursorX, startY = cursorY;
+      const finalX = targetX + rand(-2, 2);
+      const finalY = targetY + rand(-2, 2);
+  
+      const overshootX = finalX + (Math.random() < 0.5 ? -1 : 1) * rand(4, 10);
+      const overshootY = finalY + (Math.random() < 0.5 ? -1 : 1) * rand(2, 6);
+  
+      const phase1 = overshoot ? duration * 0.85 : duration;
+      const steps1 = Math.max(20, Math.floor(phase1 / 16));
+  
+      // cubic-bezier ease (approximation)
+      const ease = (t) => {
+        // ease-in-out cubic
+        return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      };
+  
+      const targetXPhase1 = overshoot ? overshootX : finalX;
+      const targetYPhase1 = overshoot ? overshootY : finalY;
+  
+      for (let i = 1; i <= steps1; i++) {
+        const t = ease(i / steps1);
+        // small jitter
+        const jitterX = rand(-0.4, 0.4);
+        const jitterY = rand(-0.4, 0.4);
+        setCursor(
+          startX + (targetXPhase1 - startX) * t + jitterX,
+          startY + (targetYPhase1 - startY) * t + jitterY
+        );
+        await sleep(16);
+      }
+  
+      if (overshoot) {
+        const phase2 = duration * 0.15;
+        const steps2 = Math.max(8, Math.floor(phase2 / 16));
+        const sx = cursorX, sy = cursorY;
+        for (let i = 1; i <= steps2; i++) {
+          const t = ease(i / steps2);
+          setCursor(
+            sx + (finalX - sx) * t,
+            sy + (finalY - sy) * t
+          );
+          await sleep(16);
+        }
+      }
+  
+      // Tiny idle wobble
+      await sleep(rand(80, 180));
+    }
+  
+    function getRect(el) {
+      const r = el.getBoundingClientRect();
+      return {
+        x: r.left + r.width / 2,
+        y: r.top + r.height / 2,
+        left: r.left,
+        top: r.top,
+        width: r.width,
+        height: r.height
+      };
+    }
+  
+    async function clickElement(el) {
+      el.style.transition = 'transform 0.08s';
+      el.style.transform = 'scale(0.985)';
+      await sleep(90);
+      el.style.transform = 'scale(1)';
+    }
+  
+    function showDropdown(anchorEl) {
+      const dropdown = document.getElementById('dropdown');
+      const rect = anchorEl.getBoundingClientRect();
+      const appRect = document.getElementById('app').getBoundingClientRect();
+      dropdown.style.left = (rect.left - appRect.left) + 'px';
+      dropdown.style.top = (rect.bottom - appRect.top + 4) + 'px';
+      dropdown.style.width = rect.width + 'px';
+      dropdown.classList.add('visible');
+    }
+  
+    function hideDropdown() {
+      document.getElementById('dropdown').classList.remove('visible');
+    }
+  
+    async function selectLanguage(selectEl, langName) {
+      selectEl.classList.add('active');
+      const rect = getRect(selectEl);
+      await moveCursorTo(rect.x, rect.y, rand(600, 850));
+      await clickElement(selectEl);
+      showDropdown(selectEl);
+      await sleep(rand(300, 500));
+  
+      // Find and "hover" through items before clicking target
+      const items = document.querySelectorAll('.dd-item');
+      const targetItem = Array.from(items).find(i => i.dataset.lang === langName);
+  
+      // Simulate scanning a couple items
+      const scanTargets = [items[0], items[Math.min(2, items.length - 1)], targetItem];
+      for (const item of scanTargets) {
+        items.forEach(i => i.classList.remove('highlighted'));
+        item.classList.add('highlighted');
+        const ir = getRect(item);
+        await moveCursorTo(ir.x, ir.y, rand(250, 420));
+      }
+  
+      await sleep(rand(150, 300));
+      await clickElement(targetItem);
+      selectEl.querySelector('.lang-label').textContent = langName;
+      hideDropdown();
+      selectEl.classList.remove('active');
+      await sleep(rand(200, 400));
+    }
+  
+    async function typeText(text) {
+      const srcText = document.getElementById('srcText');
+      const tgtText = document.getElementById('tgtText');
+      const caret = document.getElementById('srcCaret');
+  
+      // Click into the panel first
+      const panel = srcText.parentElement;
+      const pr = getRect(panel);
+      await moveCursorTo(pr.left + 30, pr.top + 30, rand(500, 700));
+      await clickElement(panel);
+  
+      caret.classList.add('visible');
+  
+      // Position caret next to text
+      const updateCaret = () => {
+        const range = document.createRange();
+        if (srcText.firstChild) {
+          range.selectNodeContents(srcText);
+          range.collapse(false);
+          const rect = range.getBoundingClientRect();
+          const panelRect = panel.getBoundingClientRect();
+          caret.style.left = (rect.right - panelRect.left + 16) + 'px';
+          caret.style.top = (rect.top - panelRect.top + 16) + 'px';
+        } else {
+          caret.style.left = '16px';
+          caret.style.top = '16px';
+        }
+      };
+      updateCaret();
+  
+      // Live translation: maps source progress to target progress proportionally,
+      // but with a slight lag and word-boundary snapping
+      const targetWords = TARGET_TEXT.split(' ');
+  
+      for (let i = 0; i < text.length; i++) {
+        srcText.textContent = text.substring(0, i + 1);
+        updateCaret();
+  
+        // Live update target — snap to nearest word boundary based on progress
+        const progress = (i + 1) / text.length;
+        // lag the translation slightly
+        const laggedProgress = Math.max(0, progress - 0.08);
+        const targetCharCount = Math.floor(TARGET_TEXT.length * laggedProgress);
+        // snap to word boundary
+        let snapped = TARGET_TEXT.substring(0, targetCharCount);
+        const lastSpace = snapped.lastIndexOf(' ');
+        if (lastSpace > 0 && targetCharCount < TARGET_TEXT.length) {
+          snapped = TARGET_TEXT.substring(0, lastSpace);
+        }
+        tgtText.textContent = snapped;
+  
+        // Variable typing rhythm
+        let delay = rand(70, 130);
+        // occasional thinking pause
+        if (Math.random() < 0.05) delay = rand(200, 350);
+        // very rare longer pause
+        if (Math.random() < 0.015) delay = rand(400, 600);
+        // pause longer on spaces
+        if (text[i] === ' ') delay = rand(120, 220);
+        await sleep(delay);
+      }
+  
+      // Final translation appears fully
+      await sleep(rand(300, 500));
+      tgtText.textContent = TARGET_TEXT;
+      caret.classList.remove('visible');
+      await sleep(800);
+    }
+  
+    // Reveal screen
+    function pickRevealLine(exclude) {
+      const pool = REVEAL_LINES.filter(l => l !== exclude);
+      return pool[Math.floor(Math.random() * pool.length)];
+    }
+  
+    let lastRevealLine = null;
+    function showReveal() {
+      const reveal = document.getElementById('reveal');
+      const line = document.getElementById('revealLine');
+      lastRevealLine = pickRevealLine(lastRevealLine);
+      line.textContent = lastRevealLine;
+      document.getElementById('revealBtn').href =
+        `https://translate.google.com/?sl=auto&tl=pt&text=${encodeURIComponent(SOURCE_TEXT)}&op=translate`;
+      reveal.classList.add('visible');
+      document.getElementById('skipBtn').style.display = 'none';
+    }
+  
+    document.getElementById('revealLine').addEventListener('click', () => {
+      const line = document.getElementById('revealLine');
+      lastRevealLine = pickRevealLine(lastRevealLine);
+      line.textContent = lastRevealLine;
+    });
+  
+    // Skip button
+    function setSkipLine() {
+      const btn = document.getElementById('skipBtn');
+      btn.textContent = SKIP_LINES[Math.floor(Math.random() * SKIP_LINES.length)];
+    }
+    setSkipLine();
+    document.getElementById('skipBtn').addEventListener('click', showReveal);
+  
+    // Main sequence
+    async function run() {
+      await sleep(600);
+      await selectLanguage(document.getElementById('srcLang'), SOURCE_LANG);
+      await selectLanguage(document.getElementById('tgtLang'), TARGET_LANG);
+      await typeText(SOURCE_TEXT);
+      showReveal();
+    }
+  
+    run();
+  })();
+  </script>
