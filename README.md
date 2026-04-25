@@ -46,23 +46,28 @@ Not yet built (planned PR 2 / PR 3):
   for React components yet — the form is shallow enough that runtime smoke testing
   in the dev server catches everything that matters at v1.
 
-### The recipient route caveat (read before starting PR 2)
+### The recipient route (how it's wired up)
 
 `app/[src]/[tgt]/[text]/page.tsx` cannot be pre-rendered at build time with
-`output: 'export'` because the text param is unbounded. Two options:
+`output: 'export'` because the text param is unbounded. We use a `_redirects`
+SPA fallback: `out/walkthrough/` is the catch-all client shell, and
+[`public/_redirects`](./public/_redirects) rewrites the recipient URL tree to
+it:
 
-1. **`_redirects` SPA fallback.** Add `out/walkthrough.html` (the catch-all client
-   shell), then in `public/_redirects`:
-   ```
-   /:src/:tgt/:text /walkthrough.html 200
-   ```
-   The shell reads `window.location.pathname` on the client. Works on Cloudflare
-   Pages out of the box.
-2. **Move to a query-param URL** like `/w?src=...&tgt=...&text=...`. Loses the
-   pretty path but renders as a single static page with no rewrite rules.
+```
+/t/:src/:tgt/* /walkthrough/ 200
+```
 
-Either is fine; (1) preserves the URLs in the spec, (2) is one line of code and zero
-infra. Decide before writing the walkthrough.
+The shell reads `window.location.pathname` on the client and reconstructs
+the parts via `parseRecipientUrl` in `lib/url.ts`.
+
+> **Why the `/t/` prefix?** On Cloudflare Workers Static Assets, `_redirects`
+> rules match *before* static asset lookup. A bare `/:src/:tgt/*` rule swallows
+> framework asset paths like `/_next/static/<chunk>.css` and serves the
+> walkthrough HTML with a CSS MIME type, which silently breaks all styling.
+> The `/t/` namespace keeps the dynamic recipient tree from shadowing
+> static assets. The constant lives in `lib/url.ts` as `RECIPIENT_PATH_PREFIX`
+> — change it in one place if you need to rename it.
 
 ## Project layout
 
@@ -137,7 +142,8 @@ The deploy config lives in [`wrangler.jsonc`](./wrangler.jsonc):
 ```
 
 The `public/_redirects` file is honoured automatically — that's how the recipient
-SPA-fallback rewrite (`/:src/:tgt[/...] -> /walkthrough/`) works in production.
+SPA-fallback rewrite (`/t/:src/:tgt[/...] -> /walkthrough/`) works in production.
+See the recipient route note above for why the `/t/` prefix exists.
 
 Two automation paths — pick one, don't run both.
 

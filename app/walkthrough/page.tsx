@@ -8,10 +8,11 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-// Static page. The real path-based routing (/:src/:tgt/:text) is handled by a
-// Cloudflare Pages _redirects rule that rewrites every 3+-segment path to
+// Static page. The real path-based routing (/t/:src/:tgt/:text) is handled
+// by a Cloudflare Workers _redirects rule that rewrites the /t/* tree to
 // /walkthrough/. The client component reads window.location.pathname to
-// reconstruct the parts.
+// reconstruct the parts. The /t/ prefix exists to keep recipient URLs from
+// shadowing framework asset paths — see public/_redirects.
 export default function WalkthroughPage() {
   return <Walkthrough />;
 }

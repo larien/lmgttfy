@@ -4,6 +4,13 @@ import { MAX_TEXT_LEN, type ValidationError } from './validation';
 
 export const SITE_BASE = 'https://lmgttfy.com';
 
+// Recipient URLs live under /t/ to avoid colliding with framework asset paths
+// (e.g. /_next/static/*) on Cloudflare Workers Static Assets, where _redirects
+// rules are matched *before* static asset lookup. Without the prefix, a greedy
+// /:src/:tgt/* rule swallows /_next/static/<chunk>.css and serves the
+// walkthrough HTML with a CSS MIME type. See public/_redirects.
+export const RECIPIENT_PATH_PREFIX = '/t';
+
 export interface RecipientUrlParts {
   src: SrcLangCode;
   tgt: LangCode;
@@ -16,14 +23,15 @@ export interface BuildOpts {
 }
 
 // Builds the recipient URL. Only appends ?theme= when non-default.
-// If text is empty, returns the bare /{src}/{tgt}/ form so the share input
+// If text is empty, returns the bare /t/{src}/{tgt}/ form so the share input
 // always shows a valid-looking URL while the user is still typing.
 export function buildRecipientUrl(parts: RecipientUrlParts, opts?: BuildOpts): string {
   const base = (opts?.base ?? SITE_BASE).replace(/\/+$/, '');
   const { src, tgt, text, theme } = parts;
   const trimmed = text.trim();
-  if (!trimmed) return `${base}/${src}/${tgt}/`;
-  const path = `${base}/${src}/${tgt}/${encodeURIComponent(trimmed)}`;
+  const prefix = `${base}${RECIPIENT_PATH_PREFIX}`;
+  if (!trimmed) return `${prefix}/${src}/${tgt}/`;
+  const path = `${prefix}/${src}/${tgt}/${encodeURIComponent(trimmed)}`;
   return theme === DEFAULT_THEME ? path : `${path}?theme=${theme}`;
 }
 
@@ -41,10 +49,17 @@ export type ParseResult =
   | { ok: false; error: ValidationError };
 
 // Parses a recipient URL from its pathname segments and search params.
-// Pathname is expected as `/{src}/{tgt}/{encodedText}` (leading slash required).
-// Anything else returns ok:false with a typed error.
+// Pathname is expected as `/t/{src}/{tgt}/{encodedText}` (leading slash and
+// /t/ prefix required — see RECIPIENT_PATH_PREFIX). Anything else returns
+// ok:false with a typed error.
 export function parseRecipientUrl(pathname: string, search = ''): ParseResult {
-  const segments = pathname.split('/').filter(Boolean);
+  const all = pathname.split('/').filter(Boolean);
+  // Strict prefix check: the redirect rule only fires for /t/* paths, so any
+  // path reaching this parser without /t/ is malformed (hand-crafted or stale).
+  if (all[0] !== RECIPIENT_PATH_PREFIX.slice(1)) {
+    return { ok: false, error: 'empty_text' };
+  }
+  const segments = all.slice(1);
   if (segments.length < 3) return { ok: false, error: 'empty_text' };
 
   const [src, tgt, ...rest] = segments;

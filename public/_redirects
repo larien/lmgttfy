@@ -1,18 +1,23 @@
-# Cloudflare Pages SPA-style rewrite for the recipient walkthrough.
+# Cloudflare Workers Static Assets SPA-style rewrite for the recipient walkthrough.
 #
-# Real files (anything Next.js exports under out/, including /about/,
-# /terms/, /privacy/, /walkthrough/, /_next/*, /favicon.ico, etc.) are
-# served first. Only requests that don't match a real file fall through
-# to these rules, so this is safe.
+# IMPORTANT: on Workers Static Assets, _redirects rules are matched BEFORE
+# static asset lookup. A greedy /:src/:tgt/* rule therefore swallows asset
+# requests like /_next/static/<chunk>.css and serves the walkthrough HTML
+# with a CSS MIME type (the bug that broke styling on the first deploy).
 #
-# Recipient URLs look like /:src/:tgt/:encodedText[?theme=:theme] — any
-# path with at least three segments. We rewrite them (status 200, URL
-# preserved in the address bar) to the walkthrough shell, which parses
-# window.location.pathname client-side.
+# To keep dynamic recipient paths from colliding with framework assets, all
+# recipient URLs live under the /t/ prefix. See lib/url.ts
+# (RECIPIENT_PATH_PREFIX). Anything outside /t/* is left to the normal
+# static asset pipeline.
+#
+# Recipient URLs look like /t/:src/:tgt/:encodedText[?theme=:theme]. We
+# rewrite the whole /t/* tree (status 200 so the address bar keeps the
+# share URL) to the walkthrough shell, which parses window.location.pathname
+# client-side.
 
 # Two- and three-plus-segment forms all reach the walkthrough shell. The
 # two-segment forms catch users who shared a half-built URL (no text) so
-# they get the typed `empty_text` error in-app instead of a Cloudflare 404.
-/:src/:tgt /walkthrough/ 200
-/:src/:tgt/ /walkthrough/ 200
-/:src/:tgt/* /walkthrough/ 200
+# they get the typed `empty_text` error in-app instead of a 404.
+/t/:src/:tgt /walkthrough/ 200
+/t/:src/:tgt/ /walkthrough/ 200
+/t/:src/:tgt/* /walkthrough/ 200

@@ -5,12 +5,14 @@ const nextConfig = {
   trailingSlash: true,
   reactStrictMode: true,
 
-  // Local dev parity with the Cloudflare Pages _redirects file.
+  // Local dev parity with the Cloudflare Workers _redirects file.
   //
-  // In production Cloudflare rewrites /:src/:tgt[/...] -> /walkthrough/ before
-  // the request hits any static asset, so the recipient URL parser (which
-  // reads window.location.pathname) sees the real shared URL while serving
-  // the walkthrough shell.
+  // In production Cloudflare rewrites /t/:src/:tgt[/...] -> /walkthrough/
+  // before the request hits any static asset, so the recipient URL parser
+  // (which reads window.location.pathname) sees the real shared URL while
+  // serving the walkthrough shell. The /t/ prefix exists to keep recipient
+  // URLs from colliding with framework asset paths under /_next/* — see
+  // public/_redirects and lib/url.ts (RECIPIENT_PATH_PREFIX).
   //
   // `next dev` doesn't run Cloudflare. These rewrites give us the same shape
   // when running locally so a copied share URL actually works end-to-end.
@@ -23,12 +25,8 @@ const nextConfig = {
   // benign and intentional.
   async rewrites() {
     return [
-      // Match anything with at least two leading single-segment params.
-      // afterFiles ordering (the default) means real pages like /about,
-      // /walkthrough, /_next/* still win. This only catches genuinely
-      // unmatched paths shaped like a recipient URL.
-      { source: '/:src/:tgt', destination: '/walkthrough' },
-      { source: '/:src/:tgt/:rest*', destination: '/walkthrough' },
+      { source: '/t/:src/:tgt', destination: '/walkthrough' },
+      { source: '/t/:src/:tgt/:rest*', destination: '/walkthrough' },
     ];
   },
 };

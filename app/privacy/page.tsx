@@ -42,7 +42,7 @@ export default function PrivacyPage() {
         <h2>What is in a URL</h2>
         <p>
           The text you encode is part of the URL itself (e.g.{' '}
-          <code>/en/pt/your%20text%20here</code>). When a recipient opens the link, the URL is
+          <code>/t/en/pt/your%20text%20here</code>). When a recipient opens the link, the URL is
           sent to our hosting provider as part of the standard web request. Our hosting provider
           (Cloudflare) may retain short-term request logs (IP address, user agent, timestamp,
           requested URL) for security and abuse prevention purposes; we do not separately log,
