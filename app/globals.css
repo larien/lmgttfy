@@ -545,11 +545,11 @@ textarea:focus,
   border-radius: 0;
 }
 .preview-frame.theme-y2k .preview-site {
-  font-family: 'Comic Sans MS', cursive;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 .preview-frame.theme-y2k .preview-wordmark {
   color: #ff00aa;
-  font-family: 'Comic Sans MS', cursive;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 .preview-frame.theme-y2k .preview-dot {
   color: #1a0033;

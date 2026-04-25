@@ -120,9 +120,12 @@ body.walkthrough.theme-y2k {
   --wk-skip-border: #1a0033;
   --wk-banner-bg: rgba(26, 0, 51, 0.92);
   --wk-banner-text: #fff;
-  --wk-font-body: 'Comic Sans MS', 'Comic Sans', cursive;
+  /* Verdana was Microsoft's 1996 screen-legibility workhorse — y2k-era
+     authentic but readable, unlike Comic Sans. Geneva/Tahoma cover the
+     macOS/Windows fallback; sans-serif is the Linux generic. */
+  --wk-font-body: Verdana, Geneva, Tahoma, sans-serif;
   --wk-font-mono: 'Courier New', monospace;
-  --wk-font-display: 'Comic Sans MS', cursive;
+  --wk-font-display: Verdana, Geneva, Tahoma, sans-serif;
   --wk-radius: 0;
   --wk-radius-lg: 0;
   --wk-cursor-color: #ff00aa;
@@ -254,7 +257,6 @@ body.walkthrough.theme-terminal .wk-urlbar::before {
   color: var(--wk-text);
 }
 body.walkthrough.theme-y2k .wk-wordmark {
-  font-weight: bold;
   text-shadow: 2px 2px 0 #fff;
 }
 body.walkthrough.theme-terminal .wk-wordmark::before {
