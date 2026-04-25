@@ -21,6 +21,7 @@ import {
 import { THEMES, THEME_LABELS, type Theme } from '@/lib/themes';
 import { buildRecipientUrl } from '@/lib/url';
 import { MAX_TEXT_LEN } from '@/lib/validation';
+import { Wordmark } from '@/components/shared/Wordmark';
 import { QRModal } from './QRModal';
 import { RecentLinks, useRecent, type RecentEntry } from './RecentLinks';
 
@@ -45,8 +46,8 @@ export function Composer() {
   const [taunt, setTaunt] = useState(INITIAL_TAUNT);
   const [snark, setSnark] = useState(INITIAL_SNARK);
 
-  const [shareHint, setShareHint] = useState<string>(ERROR_LINES.defaultShareHint);
-  const [shareHintAlert, setShareHintAlert] = useState(false);
+  // shareHint is derived: an active alert wins, otherwise it tracks `text`.
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [showQr, setShowQr] = useState(false);
   const [canShare, setCanShare] = useState(false);
@@ -54,11 +55,14 @@ export function Composer() {
   const { recents, add: addRecent } = useRecent();
 
   // Randomise the surface text (taunt + snark) on mount only — never during
-  // SSR/build, otherwise hydration mismatches would log warnings.
+  // SSR/build, otherwise hydration mismatches would log warnings. Same goes
+  // for navigator.share, which doesn't exist during static export.
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     setTaunt(pickRandom(TAGLINE_TAUNTS));
     setSnark(pickRandom(REVEAL_LINES));
     setCanShare(typeof navigator !== 'undefined' && typeof navigator.share === 'function');
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
 
   // Live URL — derived state, no useEffect needed.
@@ -67,65 +71,44 @@ export function Composer() {
     [src, tgt, text, theme],
   );
 
-  // Update the share hint when text presence changes (cheap effect, no flicker).
-  useEffect(() => {
-    if (shareHintAlert) return; // Don't overwrite a temporary mocky message
-    setShareHint(text.trim() ? ERROR_LINES.defaultShareHint : ERROR_LINES.emptyTextHint);
-  }, [text, shareHintAlert]);
+  const shareHint =
+    alertMessage ??
+    (text.trim() ? ERROR_LINES.defaultShareHint : ERROR_LINES.emptyTextHint);
 
   // === Animated preview text =================================================
   // Append-only typing animation for the preview pane. Snaps for delete/paste
-  // (any non-append change). Implemented via refs so chained setTimeouts read
-  // the latest target without forcing useEffect to re-fire per char.
-  const targetRef = useRef('');
+  // (any non-append change). Driven by a single setInterval per text change —
+  // simpler than chained setTimeouts and avoids self-referential callbacks.
   const displayedRef = useRef('');
-  const animTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [displayedText, setDisplayedText] = useState('');
 
-  const writeDisplayed = useCallback((s: string) => {
-    displayedRef.current = s;
-    setDisplayedText(s);
-  }, []);
+  useEffect(() => {
+    const target = text.trim();
+    let displayed = displayedRef.current;
 
-  const tickAnimation = useCallback(() => {
-    const target = targetRef.current;
-    const current = displayedRef.current;
-    if (current === target) {
-      animTimerRef.current = null;
+    // Non-append change (delete, paste, language switch echo): snap to target.
+    if (!target.startsWith(displayed)) {
+      displayed = target;
+      displayedRef.current = displayed;
+      setDisplayedText(displayed);
       return;
     }
-    if (target.startsWith(current) && target.length > current.length) {
-      writeDisplayed(target.slice(0, current.length + 1));
-      animTimerRef.current = setTimeout(tickAnimation, 30);
-    } else {
-      writeDisplayed(target);
-      animTimerRef.current = null;
-    }
-  }, [writeDisplayed]);
+    if (displayed === target) return;
 
-  useEffect(() => {
-    targetRef.current = text.trim();
-    if (animTimerRef.current) {
-      clearTimeout(animTimerRef.current);
-      animTimerRef.current = null;
-    }
-    tickAnimation();
-  }, [text, tickAnimation]);
-
-  useEffect(
-    () => () => {
-      if (animTimerRef.current) clearTimeout(animTimerRef.current);
-    },
-    [],
-  );
+    const id = setInterval(() => {
+      const next = target.slice(0, displayed.length + 1);
+      displayed = next;
+      displayedRef.current = next;
+      setDisplayedText(next);
+      if (next === target) clearInterval(id);
+    }, 30);
+    return () => clearInterval(id);
+  }, [text]);
 
   // === Copy ==================================================================
   const flashHint = useCallback((message: string) => {
-    setShareHint(message);
-    setShareHintAlert(true);
-    setTimeout(() => {
-      setShareHintAlert(false);
-    }, 2000);
+    setAlertMessage(message);
+    setTimeout(() => setAlertMessage(null), 2000);
   }, []);
 
   const recordRecent = useCallback(() => {
@@ -218,9 +201,7 @@ export function Composer() {
       <header className="page-header">
         <div className="header-row">
           <div>
-            <a href="/" className="wordmark">
-              lmgttfy<span className="dot">.</span>com
-            </a>
+            <Wordmark />
             <p className="tagline">
               Let Me Google Translate That For You.{' '}
               <span className="tagline-taunt">{taunt}</span>
@@ -461,7 +442,7 @@ export function Composer() {
               </button>
             </div>
           </div>
-          <div className={`share-hint ${shareHintAlert ? 'alert' : ''}`}>{shareHint}</div>
+          <div className={`share-hint ${alertMessage ? 'alert' : ''}`}>{shareHint}</div>
           <RecentLinks recents={recents} onSelect={loadFromRecent} />
         </section>
       </main>

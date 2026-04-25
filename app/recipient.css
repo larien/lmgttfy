@@ -1,0 +1,631 @@
+/* =============================================================
+   Recipient walkthrough styles (translated verbatim from
+   docs/prototypes/recipient-prototype.html, with class names
+   prefixed `wk-` to avoid collision with homepage globals).
+
+   Loaded only by app/walkthrough/page.tsx, but also relied on
+   when the body has `walkthrough` class set by <Walkthrough/>.
+   ============================================================= */
+
+/* Default theme (warm) variables */
+body.walkthrough {
+  --wk-bg: #f4f1ec;
+  --wk-text: #2a2826;
+  --wk-text-muted: #8a8680;
+  --wk-text-faint: #a8a49e;
+  --wk-accent: #c44a2e;
+  --wk-browser-bg: #fff;
+  --wk-browser-shadow: 0 20px 60px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.06);
+  --wk-chrome-bg: #ebe8e3;
+  --wk-chrome-border: #ddd8d1;
+  --wk-dot-bg: #cfc9c1;
+  --wk-urlbar-bg: #fff;
+  --wk-urlbar-text: #6a6660;
+  --wk-panel-bg: #fff;
+  --wk-panel-translated-bg: #faf8f4;
+  --wk-panel-border: #e3ded6;
+  --wk-select-bg: #f7f4ef;
+  --wk-select-hover: #efebe4;
+  --wk-reveal-bg: rgba(244, 241, 236, 0.96);
+  --wk-reveal-btn-bg: #2a2826;
+  --wk-reveal-btn-hover: #1a1816;
+  --wk-reveal-btn-text: #fff;
+  --wk-skip-bg: rgba(0, 0, 0, 0.04);
+  --wk-skip-border: rgba(0, 0, 0, 0.08);
+  --wk-banner-bg: rgba(42, 40, 38, 0.92);
+  --wk-banner-text: #fff;
+  --wk-font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --wk-font-mono: 'SF Mono', Menlo, monospace;
+  --wk-font-display: 'Inter', -apple-system, sans-serif;
+  --wk-radius: 8px;
+  --wk-radius-lg: 12px;
+  --wk-cursor-color: black;
+  --wk-cursor-stroke: white;
+
+  background: var(--wk-bg);
+  color: var(--wk-text);
+  font-family: var(--wk-font-body);
+  overflow: hidden;
+  user-select: none;
+  cursor: default;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+body.walkthrough.theme-dark {
+  --wk-bg: #0f0f10;
+  --wk-text: #ededed;
+  --wk-text-muted: #8a8a8c;
+  --wk-text-faint: #5a5a5c;
+  --wk-accent: #e6a85c;
+  --wk-browser-bg: #1a1a1c;
+  --wk-browser-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3);
+  --wk-chrome-bg: #232326;
+  --wk-chrome-border: #2e2e32;
+  --wk-dot-bg: #3a3a3e;
+  --wk-urlbar-bg: #0f0f10;
+  --wk-urlbar-text: #8a8a8c;
+  --wk-panel-bg: #1a1a1c;
+  --wk-panel-translated-bg: #15151700;
+  --wk-panel-border: #2e2e32;
+  --wk-select-bg: #232326;
+  --wk-select-hover: #2a2a2e;
+  --wk-reveal-bg: rgba(15, 15, 16, 0.96);
+  --wk-reveal-btn-bg: #ededed;
+  --wk-reveal-btn-hover: #fff;
+  --wk-reveal-btn-text: #0f0f10;
+  --wk-skip-bg: rgba(255, 255, 255, 0.04);
+  --wk-skip-border: rgba(255, 255, 255, 0.08);
+  --wk-banner-bg: rgba(237, 237, 237, 0.92);
+  --wk-banner-text: #0f0f10;
+  --wk-cursor-color: white;
+  --wk-cursor-stroke: black;
+}
+
+body.walkthrough.theme-y2k {
+  --wk-bg: linear-gradient(135deg, #ff6ec7 0%, #00d4ff 100%);
+  --wk-text: #1a0033;
+  --wk-text-muted: #6a3a8a;
+  --wk-text-faint: #9a7aaa;
+  --wk-accent: #ff00aa;
+  --wk-browser-bg: #fffacd;
+  --wk-browser-shadow: 6px 6px 0 #1a0033, 12px 12px 0 #ff00aa;
+  --wk-chrome-bg: #c0c0ff;
+  --wk-chrome-border: #1a0033;
+  --wk-dot-bg: #ff00aa;
+  --wk-urlbar-bg: #fff;
+  --wk-urlbar-text: #1a0033;
+  --wk-panel-bg: #fff;
+  --wk-panel-translated-bg: #ffe0f5;
+  --wk-panel-border: #1a0033;
+  --wk-select-bg: #e0f7ff;
+  --wk-select-hover: #ffd6f5;
+  --wk-reveal-bg: rgba(255, 110, 199, 0.92);
+  --wk-reveal-btn-bg: #ff00aa;
+  --wk-reveal-btn-hover: #cc0088;
+  --wk-reveal-btn-text: #fff;
+  --wk-skip-bg: rgba(255, 255, 255, 0.7);
+  --wk-skip-border: #1a0033;
+  --wk-banner-bg: rgba(26, 0, 51, 0.92);
+  --wk-banner-text: #fff;
+  --wk-font-body: 'Comic Sans MS', 'Comic Sans', cursive;
+  --wk-font-mono: 'Courier New', monospace;
+  --wk-font-display: 'Comic Sans MS', cursive;
+  --wk-radius: 0;
+  --wk-radius-lg: 0;
+  --wk-cursor-color: #ff00aa;
+  --wk-cursor-stroke: white;
+}
+
+body.walkthrough.theme-terminal {
+  --wk-bg: #000;
+  --wk-text: #00ff41;
+  --wk-text-muted: #008822;
+  --wk-text-faint: #004411;
+  --wk-accent: #00ff41;
+  --wk-browser-bg: #000;
+  --wk-browser-shadow: 0 0 40px rgba(0, 255, 65, 0.2), inset 0 0 0 1px #00ff41;
+  --wk-chrome-bg: #001100;
+  --wk-chrome-border: #00ff41;
+  --wk-dot-bg: #00ff41;
+  --wk-urlbar-bg: #000;
+  --wk-urlbar-text: #00ff41;
+  --wk-panel-bg: #000;
+  --wk-panel-translated-bg: #000;
+  --wk-panel-border: #00ff41;
+  --wk-select-bg: #001100;
+  --wk-select-hover: #002200;
+  --wk-reveal-bg: rgba(0, 0, 0, 0.96);
+  --wk-reveal-btn-bg: #00ff41;
+  --wk-reveal-btn-hover: #44ff77;
+  --wk-reveal-btn-text: #000;
+  --wk-skip-bg: transparent;
+  --wk-skip-border: #00ff41;
+  --wk-banner-bg: rgba(0, 255, 65, 0.92);
+  --wk-banner-text: #000;
+  --wk-font-body: 'SF Mono', 'Courier New', monospace;
+  --wk-font-mono: 'SF Mono', 'Courier New', monospace;
+  --wk-font-display: 'SF Mono', 'Courier New', monospace;
+  --wk-radius: 0;
+  --wk-radius-lg: 0;
+  --wk-cursor-color: #00ff41;
+  --wk-cursor-stroke: #000;
+}
+
+/* =============================================================
+   Layout root
+   ============================================================= */
+.wk-root {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+/* =============================================================
+   Browser chrome + fake site
+   ============================================================= */
+.wk-browser {
+  position: relative;
+  width: 100%;
+  max-width: 880px;
+  background: var(--wk-browser-bg);
+  border-radius: var(--wk-radius-lg);
+  box-shadow: var(--wk-browser-shadow);
+  overflow: hidden;
+  transition: background 0.3s ease, box-shadow 0.3s ease, border-radius 0.3s ease;
+}
+
+.wk-chrome {
+  background: var(--wk-chrome-bg);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-bottom: 1px solid var(--wk-chrome-border);
+}
+
+.wk-dots {
+  display: flex;
+  gap: 6px;
+}
+.wk-dots span {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--wk-dot-bg);
+}
+body.walkthrough.theme-y2k .wk-dots span {
+  border-radius: 0;
+}
+body.walkthrough.theme-terminal .wk-dots span {
+  border-radius: 0;
+  box-shadow: 0 0 4px var(--wk-accent);
+}
+
+.wk-urlbar {
+  flex: 1;
+  background: var(--wk-urlbar-bg);
+  border-radius: var(--wk-radius);
+  padding: 5px 12px;
+  font-size: 12px;
+  color: var(--wk-urlbar-text);
+  font-family: var(--wk-font-mono);
+}
+body.walkthrough.theme-terminal .wk-urlbar::before {
+  content: '> ';
+}
+
+.wk-site {
+  padding: 32px;
+  min-height: 360px;
+}
+
+.wk-site-header {
+  margin-bottom: 28px;
+}
+
+.wk-wordmark {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--wk-accent);
+  font-family: var(--wk-font-display);
+}
+.wk-wordmark .wk-dot {
+  color: var(--wk-text);
+}
+body.walkthrough.theme-y2k .wk-wordmark {
+  font-weight: bold;
+  text-shadow: 2px 2px 0 #fff;
+}
+body.walkthrough.theme-terminal .wk-wordmark::before {
+  content: '[ ';
+}
+body.walkthrough.theme-terminal .wk-wordmark::after {
+  content: ' ]';
+}
+
+/* =============================================================
+   Translator (lang selectors + panels)
+   ============================================================= */
+.wk-lang-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.wk-lang-select {
+  flex: 1;
+  background: var(--wk-select-bg);
+  border: 1px solid var(--wk-panel-border);
+  border-radius: var(--wk-radius);
+  padding: 10px 14px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.08s;
+  color: var(--wk-text);
+}
+.wk-lang-select.active {
+  background: var(--wk-select-hover);
+  border-color: var(--wk-accent);
+}
+.wk-lang-label {
+  color: var(--wk-text);
+}
+.wk-caret {
+  color: var(--wk-text-muted);
+  font-size: 10px;
+}
+.wk-swap {
+  color: var(--wk-text-muted);
+  font-size: 18px;
+  padding: 0 4px;
+}
+
+.wk-panels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.wk-panel {
+  background: var(--wk-panel-bg);
+  border: 1px solid var(--wk-panel-border);
+  border-radius: var(--wk-radius);
+  padding: 16px;
+  min-height: 140px;
+  font-size: 16px;
+  line-height: 1.5;
+  position: relative;
+  color: var(--wk-text);
+  transition: transform 0.08s;
+}
+.wk-panel.wk-translated {
+  background: var(--wk-panel-translated-bg);
+}
+.wk-panel-text {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.wk-panel-placeholder {
+  color: var(--wk-text-faint);
+  font-style: italic;
+}
+.wk-panel-caret {
+  display: none;
+  position: absolute;
+  color: var(--wk-text);
+  font-weight: 300;
+  animation: wk-blink 1s step-end infinite;
+}
+.wk-panel-caret.wk-visible {
+  display: inline;
+}
+@keyframes wk-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* =============================================================
+   Cursor + dropdown
+   ============================================================= */
+.wk-cursor {
+  position: absolute;
+  width: 18px;
+  height: 24px;
+  pointer-events: none;
+  z-index: 100;
+  background-size: contain;
+  background-repeat: no-repeat;
+  transition: transform 0.05s linear;
+  left: 0;
+  top: 0;
+  will-change: transform;
+}
+
+.wk-dropdown {
+  position: absolute;
+  background: var(--wk-panel-bg);
+  border: 1px solid var(--wk-panel-border);
+  border-radius: var(--wk-radius);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  padding: 6px 0;
+  min-width: 200px;
+  display: none;
+  z-index: 50;
+  color: var(--wk-text);
+}
+.wk-dropdown.wk-visible {
+  display: block;
+}
+.wk-dd-item {
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.wk-dd-item.wk-highlighted {
+  background: var(--wk-select-hover);
+}
+
+/* =============================================================
+   Skip button
+   ============================================================= */
+.wk-skip {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: var(--wk-skip-bg);
+  border: 1px solid var(--wk-skip-border);
+  color: var(--wk-text-muted);
+  padding: 8px 14px;
+  border-radius: var(--wk-radius);
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+  z-index: 200;
+}
+.wk-skip:hover {
+  color: var(--wk-text);
+}
+
+/* =============================================================
+   Parody banner (top)
+   ============================================================= */
+.wk-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: var(--wk-banner-bg);
+  color: var(--wk-banner-text);
+  padding: 10px 16px;
+  font-size: 13px;
+  text-align: center;
+  z-index: 250;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.wk-banner.wk-banner-hidden {
+  opacity: 0;
+  transform: translateY(-100%);
+  pointer-events: none;
+}
+.wk-banner-dismiss {
+  background: transparent;
+  border: 1px solid currentColor;
+  color: inherit;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 11px;
+  cursor: pointer;
+  font-family: inherit;
+  opacity: 0.8;
+}
+.wk-banner-dismiss:hover {
+  opacity: 1;
+}
+
+/* =============================================================
+   Reveal screen
+   ============================================================= */
+.wk-reveal {
+  position: fixed;
+  inset: 0;
+  background: var(--wk-reveal-bg);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  padding: 24px;
+  backdrop-filter: blur(8px);
+}
+.wk-reveal.wk-visible {
+  display: flex;
+  animation: wk-fade-in 0.4s ease;
+}
+@keyframes wk-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.wk-reveal-card {
+  text-align: center;
+  max-width: 520px;
+}
+.wk-reveal-line {
+  font-size: 36px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  color: var(--wk-text);
+  font-family: var(--wk-font-display);
+  background: transparent;
+  border: none;
+  padding: 0;
+  width: 100%;
+}
+.wk-reveal-line:hover {
+  opacity: 0.7;
+}
+.wk-reveal-hint {
+  font-size: 12px;
+  color: var(--wk-text-muted);
+  margin-bottom: 32px;
+}
+.wk-reveal-btn {
+  display: inline-block;
+  background: var(--wk-reveal-btn-bg);
+  color: var(--wk-reveal-btn-text);
+  padding: 12px 28px;
+  border-radius: var(--wk-radius);
+  font-size: 15px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: transform 0.1s, background 0.15s;
+}
+.wk-reveal-btn:hover {
+  background: var(--wk-reveal-btn-hover);
+  transform: translateY(-1px);
+}
+
+.wk-theme-row {
+  margin-top: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.wk-theme-row-label {
+  font-size: 11px;
+  color: var(--wk-text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.wk-theme-swatches {
+  display: flex;
+  gap: 8px;
+}
+.wk-swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.1s, border-color 0.15s;
+  background-clip: padding-box;
+}
+.wk-swatch:hover {
+  transform: scale(1.1);
+}
+.wk-swatch.wk-active {
+  border-color: var(--wk-text);
+}
+.wk-swatch-warm {
+  background: linear-gradient(135deg, #f4f1ec 50%, #c44a2e 50%);
+}
+.wk-swatch-dark {
+  background: linear-gradient(135deg, #1a1a1c 50%, #e6a85c 50%);
+}
+.wk-swatch-y2k {
+  background: linear-gradient(135deg, #ff6ec7 50%, #00d4ff 50%);
+}
+.wk-swatch-terminal {
+  background: linear-gradient(135deg, #000 50%, #00ff41 50%);
+}
+
+.wk-reveal-disclaimer {
+  margin-top: 32px;
+  font-size: 11px;
+  color: var(--wk-text-faint);
+}
+
+.wk-reveal-footer {
+  margin-top: 14px;
+  font-size: 10px;
+  color: var(--wk-text-faint);
+}
+.wk-reveal-footer a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.wk-reveal-footer a:hover {
+  color: var(--wk-accent);
+}
+
+/* =============================================================
+   Error walkthrough — same chrome, error message in src panel
+   ============================================================= */
+.wk-error-message {
+  font-size: 18px;
+  color: var(--wk-text);
+  font-family: var(--wk-font-display);
+  font-weight: 500;
+  line-height: 1.4;
+}
+.wk-error-actions {
+  margin-top: 24px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 13px;
+}
+.wk-error-actions a {
+  color: var(--wk-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-weight: 500;
+}
+
+/* =============================================================
+   Responsive (mobile)
+   ============================================================= */
+@media (max-width: 600px) {
+  .wk-root {
+    padding: 16px;
+  }
+  .wk-panels {
+    grid-template-columns: 1fr;
+  }
+  .wk-site {
+    padding: 20px;
+  }
+  .wk-reveal-line {
+    font-size: 28px;
+  }
+  /* Skip button moves to top-right on mobile to avoid system gesture conflicts. */
+  .wk-skip {
+    bottom: auto;
+    top: 16px;
+    right: 16px;
+  }
+  .wk-banner {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+}

@@ -1,0 +1,13 @@
+# Cloudflare Pages SPA-style rewrite for the recipient walkthrough.
+#
+# Real files (anything Next.js exports under out/, including /about/,
+# /terms/, /privacy/, /walkthrough/, /_next/*, /favicon.ico, etc.) are
+# served first. Only requests that don't match a real file fall through
+# to these rules, so this is safe.
+#
+# Recipient URLs look like /:src/:tgt/:encodedText[?theme=:theme] — any
+# path with at least three segments. We rewrite them (status 200, URL
+# preserved in the address bar) to the walkthrough shell, which parses
+# window.location.pathname client-side.
+
+/:src/:tgt/* /walkthrough/ 200

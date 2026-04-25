@@ -28,7 +28,10 @@ export function useRecent(): UseRecent {
   const [recents, setRecents] = useState<RecentEntry[]>([]);
   const [ready, setReady] = useState(false);
 
+  // localStorage is browser-only — must be read after mount, even though
+  // this triggers a re-render. The empty initial state is intentional.
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       if (raw) {
@@ -42,6 +45,7 @@ export function useRecent(): UseRecent {
     } finally {
       setReady(true);
     }
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
 
   const add = useCallback((entry: RecentEntry) => {

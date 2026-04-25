@@ -64,6 +64,9 @@ export function QRModal({ url, onClose }: Props) {
         </div>
         <div className="qr-canvas">
           {dataUrl ? (
+            // Client-generated data URL; next/image can't optimize it and we
+            // export statically anyway. Plain <img> is correct here.
+            // eslint-disable-next-line @next/next/no-img-element
             <img src={dataUrl} alt="QR code for the share link" width={240} height={240} />
           ) : error ? (
             <span style={{ color: '#a8a49e', fontSize: 12 }}>QR rendering failed.</span>
