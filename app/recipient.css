@@ -11,8 +11,12 @@
 body.walkthrough {
   --wk-bg: #f4f1ec;
   --wk-text: #2a2826;
-  --wk-text-muted: #8a8680;
-  --wk-text-faint: #a8a49e;
+  /* Originally #8a8680 / #a8a49e — the disclaimer at 11px on cream landed
+     at 2.4:1 and the hint text at 3.0:1, both failing AA normal. Darker
+     warm-grays preserve the muted hierarchy and clear AA on cream and white
+     panels alike. */
+  --wk-text-muted: #555048;
+  --wk-text-faint: #6a665e;
   --wk-accent: #c44a2e;
   --wk-browser-bg: #fff;
   --wk-browser-shadow: 0 20px 60px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.06);
@@ -54,8 +58,11 @@ body.walkthrough {
 body.walkthrough.theme-dark {
   --wk-bg: #0f0f10;
   --wk-text: #ededed;
+  /* Faint was #5a5a5c — 2.8:1 on near-black, fails AA for the 11px
+     disclaimer. Bumped to #7e7e80 (~4.8:1). Muted #8a8a8c was already
+     marginal (5:1) so left alone. */
   --wk-text-muted: #8a8a8c;
-  --wk-text-faint: #5a5a5c;
+  --wk-text-faint: #7e7e80;
   --wk-accent: #e6a85c;
   --wk-browser-bg: #1a1a1c;
   --wk-browser-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -84,8 +91,12 @@ body.walkthrough.theme-dark {
 body.walkthrough.theme-y2k {
   --wk-bg: linear-gradient(135deg, #ff6ec7 0%, #00d4ff 100%);
   --wk-text: #1a0033;
-  --wk-text-muted: #6a3a8a;
-  --wk-text-faint: #9a7aaa;
+  /* Originally #6a3a8a / #9a7aaa — both vanished against the pink reveal
+     overlay (3:1 and 1.6:1 respectively). Darker purples keep the muted
+     hierarchy but actually clear AA on every y2k surface (pink reveal,
+     gradient body, white panel). */
+  --wk-text-muted: #3a1a5a;
+  --wk-text-faint: #5a2880;
   --wk-accent: #ff00aa;
   --wk-browser-bg: #fffacd;
   --wk-browser-shadow: 6px 6px 0 #1a0033, 12px 12px 0 #ff00aa;
@@ -102,7 +113,9 @@ body.walkthrough.theme-y2k {
   --wk-reveal-bg: rgba(255, 110, 199, 0.92);
   --wk-reveal-btn-bg: #ff00aa;
   --wk-reveal-btn-hover: #cc0088;
-  --wk-reveal-btn-text: #fff;
+  /* Deep purple text on hot pink (~5.5:1) is more authentically y2k than
+     the previous white-on-magenta (~3.9:1) and clears WCAG AA. */
+  --wk-reveal-btn-text: #1a0033;
   --wk-skip-bg: rgba(255, 255, 255, 0.7);
   --wk-skip-border: #1a0033;
   --wk-banner-bg: rgba(26, 0, 51, 0.92);
@@ -119,8 +132,11 @@ body.walkthrough.theme-y2k {
 body.walkthrough.theme-terminal {
   --wk-bg: #000;
   --wk-text: #00ff41;
-  --wk-text-muted: #008822;
-  --wk-text-faint: #004411;
+  /* Originally #008822 / #004411 — the faint shade was 1.5:1 on black,
+     unreadable. Brighter greens keep the muted hierarchy below the primary
+     #00ff41 while clearing AA on black panels and the reveal-bg. */
+  --wk-text-muted: #00cc33;
+  --wk-text-faint: #009928;
   --wk-accent: #00ff41;
   --wk-browser-bg: #000;
   --wk-browser-shadow: 0 0 40px rgba(0, 255, 65, 0.2), inset 0 0 0 1px #00ff41;
@@ -492,24 +508,93 @@ body.walkthrough.theme-terminal .wk-wordmark::after {
   opacity: 0.7;
 }
 .wk-reveal-hint {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--wk-text-muted);
   margin-bottom: 32px;
 }
+/* Primary CTA. 14×28 padding + 16px font puts the hit area at ~46px, above
+   the 44px touch-target floor. font-weight 600 also helps y2k clear the
+   AA-large threshold (14px bold qualifies, where 15px regular didn't). */
 .wk-reveal-btn {
   display: inline-block;
   background: var(--wk-reveal-btn-bg);
   color: var(--wk-reveal-btn-text);
-  padding: 12px 28px;
+  padding: 14px 28px;
   border-radius: var(--wk-radius);
-  font-size: 15px;
+  font-size: 16px;
   text-decoration: none;
-  font-weight: 500;
-  transition: transform 0.1s, background 0.15s;
+  font-weight: 600;
+  line-height: 1.2;
+  transition: transform 0.1s, background 0.15s, color 0.15s;
 }
 .wk-reveal-btn:hover {
   background: var(--wk-reveal-btn-hover);
   transform: translateY(-1px);
+}
+
+/* y2k-specific lift. Magenta on pink (~1.7:1 surround) reads as flat without
+   help; a chunky offset shadow in the same deep purple used for --wk-text
+   pops both buttons off the reveal-bg. Hover "presses" into the shadow,
+   matching the existing y2k browser-shadow vocabulary. */
+body.walkthrough.theme-y2k .wk-reveal-btn {
+  box-shadow: 4px 4px 0 #1a0033;
+  transition: transform 0.1s, background 0.15s, color 0.15s, box-shadow 0.1s;
+}
+body.walkthrough.theme-y2k .wk-reveal-btn:hover {
+  box-shadow: 2px 2px 0 #1a0033;
+  transform: translate(2px, 2px);
+}
+
+/* Action row groups the primary "Open Google Translate" CTA with the
+   secondary "Try it on someone" link. Wraps to a column on narrow screens. */
+.wk-reveal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+/* Outline variant. Border + text use --wk-text rather than --wk-reveal-btn-bg
+   so the y2k theme gets deep-purple-on-pink (~10:1) instead of the previous
+   pink-on-pink (~2.5:1, near-invisible). Padding compensates for the 1px
+   border so outer height matches the primary. */
+.wk-reveal-btn-secondary {
+  background: transparent;
+  color: var(--wk-text);
+  border: 1px solid var(--wk-text);
+  padding: 13px 27px;
+}
+/* Hover inverts: fill with --wk-text, use --wk-banner-text for the foreground.
+   --wk-banner-text is the per-theme inverse of --wk-text already (defined for
+   the parody banner), so the pair is high-contrast in every theme without a
+   new variable. */
+.wk-reveal-btn-secondary:hover {
+  background: var(--wk-text);
+  color: var(--wk-banner-text);
+}
+
+/* Tertiary "play again" text button. Bumped to 14px / ~38px tall so it's
+   reliably tappable on mobile, and switched off --wk-text-muted (which fails
+   AA in warm at 3.0:1) to --wk-text @ 0.7 opacity — clears AA in every theme
+   and keeps the muted feel. */
+.wk-reveal-replay {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  color: var(--wk-text);
+  opacity: 0.7;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.wk-reveal-replay:hover {
+  opacity: 1;
 }
 
 .wk-theme-row {
@@ -520,7 +605,7 @@ body.walkthrough.theme-terminal .wk-wordmark::after {
   gap: 12px;
 }
 .wk-theme-row-label {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--wk-text-faint);
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -560,13 +645,13 @@ body.walkthrough.theme-terminal .wk-wordmark::after {
 
 .wk-reveal-disclaimer {
   margin-top: 32px;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--wk-text-faint);
 }
 
 .wk-reveal-footer {
   margin-top: 14px;
-  font-size: 10px;
+  font-size: 12px;
   color: var(--wk-text-faint);
 }
 .wk-reveal-footer a {
@@ -615,17 +700,66 @@ body.walkthrough.theme-terminal .wk-wordmark::after {
   .wk-site {
     padding: 20px;
   }
+
+  /* Walkthrough chrome: small chrome-y text bumps a notch (12→13, 11→12)
+     so it stays legible on a phone without losing the "this is browser
+     chrome" feel. Wordmark trims 20→18 to match the tighter site padding. */
+  .wk-wordmark {
+    font-size: 18px;
+  }
+  .wk-urlbar {
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+
+  /* Lang selects + panels keep desktop sizes — they're already at the
+     16px body floor and the stacked panel layout gives them room. */
+
+  /* Reveal screen */
   .wk-reveal-line {
     font-size: 28px;
   }
-  /* Skip button moves to top-right on mobile to avoid system gesture conflicts. */
-  .wk-skip {
-    bottom: auto;
-    top: 16px;
-    right: 16px;
+  /* Stack the two CTAs full-width on narrow screens — easier to tap, and the
+     forced-stack reads more naturally than two centered pill buttons. */
+  .wk-reveal-actions {
+    flex-direction: column;
+    align-items: stretch;
   }
+  .wk-reveal-btn {
+    text-align: center;
+  }
+  /* Tighter top margins so the disclaimer/footer stack doesn't push past
+     the fold on shorter viewports. */
+  .wk-reveal-disclaimer {
+    margin-top: 24px;
+  }
+  .wk-reveal-footer {
+    margin-top: 12px;
+  }
+
+  /* Skip stays at the bottom on mobile (matches desktop placement). Bumped
+     to 13px / 10×14 padding so it clears the 44px tap floor. Bottom inset
+     widened to 24px on mobile to clear the iOS home-bar gesture area. */
+  .wk-skip {
+    bottom: 24px;
+    right: 16px;
+    font-size: 13px;
+    padding: 10px 14px;
+  }
+
   .wk-banner {
     font-size: 12px;
     padding: 8px 12px;
+  }
+  .wk-banner-dismiss {
+    font-size: 12px;
+    padding: 4px 10px;
+  }
+
+  .wk-error-message {
+    font-size: 16px;
+  }
+  .wk-error-actions {
+    font-size: 14px;
   }
 }

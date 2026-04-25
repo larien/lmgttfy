@@ -904,6 +904,11 @@ textarea:focus,
   color: #d6d0c5;
 }
 
+.footer-credit {
+  margin-top: 10px;
+  color: #b8b3aa;
+}
+
 /* =============================================================
    Static prose pages (about/terms/privacy)
    ============================================================= */
@@ -970,8 +975,115 @@ textarea:focus,
   }
   .copy-btn {
     min-width: unset;
+    font-size: 16px;
+    padding: 14px 24px;
   }
   .theme-picker {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* iOS Safari auto-zooms any focused form field below 16px. The desktop
+     15/13px values would zoom in on tap and never zoom back consistently
+     — this is a real bug, not a polish bump. */
+  textarea,
+  .lang-input,
+  .share-url {
+    font-size: 16px;
+  }
+
+  /* With 16px text the language selects need every horizontal pixel they
+     can spare or labels like "Portuguese" / "Vietnamese" get clipped on a
+     360px viewport. Tighter horizontal padding + a smaller chevron offset
+     buys ~16px of text width without touching the iOS-friendly font size.
+     Vertical padding also trims so the input doesn't feel oversized
+     relative to the new font. */
+  .lang-input {
+    padding: 11px 30px 11px 12px;
+    background-position: right 11px center;
+  }
+
+  /* Headline scale: 28→24 / 32→26 keeps the wordmark and prose H1 from
+     dominating the narrower column while preserving display weight. */
+  .wordmark {
+    font-size: 24px;
+  }
+  .tagline {
+    font-size: 15px;
+  }
+  .prose-page {
+    padding: 32px 20px 48px;
+  }
+  .prose-page h1 {
+    font-size: 26px;
+  }
+  .prose-page h2 {
+    font-size: 17px;
+  }
+  .prose-page p,
+  .prose-page li {
+    font-size: 16px;
+  }
+  .prose-page .meta {
+    font-size: 13px;
+  }
+
+  /* 13px floor for labels/meta. Below this, eye-strain at arm's length on
+     a phone — and 13 still reads as smaller than the 16px body. */
+  .field-label,
+  .field-hint,
+  .examples-label,
+  .preview-label,
+  .snark-preview-label,
+  .recent-label,
+  .recent-copy,
+  .qr-modal-header,
+  .share-hint,
+  .footer-text,
+  .page-footer {
+    font-size: 13px;
+  }
+  .recent-item {
+    font-size: 14px;
+  }
+  .recent-meta,
+  .qr-caption {
+    font-size: 12px;
+  }
+  .example-chip {
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+  .theme-card-name {
+    font-size: 13px;
+  }
+
+  /* Mini preview frame: scale the inner type up a notch so it stops
+     looking like a screenshot of a screenshot at 10–12px on a 360px
+     viewport. Proportions stay in sync (urlbar < lang < panel < wordmark). */
+  .preview-urlbar {
+    font-size: 11px;
+  }
+  .preview-lang {
+    font-size: 12px;
+  }
+  .preview-panel {
+    font-size: 13px;
+  }
+  .preview-wordmark {
+    font-size: 15px;
+  }
+}
+
+/* Phones below ~iPhone 12 mini width — wordmark and prose H1 trim once
+   more so they don't crowd the rest of the chrome. */
+@media (max-width: 480px) {
+  .wordmark {
+    font-size: 22px;
+  }
+  .prose-page h1 {
+    font-size: 24px;
+  }
+  .share-section {
+    padding: 16px 18px;
   }
 }

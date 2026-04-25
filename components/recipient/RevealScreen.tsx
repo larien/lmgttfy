@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import type { LangCode, SrcLangCode } from '@/lib/languages';
 import { pickRandom, REVEAL_LINES } from '@/lib/snarkLines';
 import { THEMES, THEME_LABELS, type Theme } from '@/lib/themes';
 
@@ -9,7 +10,10 @@ interface Props {
   googleUrl: string;
   reportMailto: string;
   theme: Theme;
+  src: SrcLangCode;
+  tgt: LangCode;
   onThemeChange: (next: Theme) => void;
+  onReplay: () => void;
 }
 
 export function RevealScreen({
@@ -17,7 +21,10 @@ export function RevealScreen({
   googleUrl,
   reportMailto,
   theme,
+  src,
+  tgt,
   onThemeChange,
+  onReplay,
 }: Props) {
   const [line, setLine] = useState<string>(REVEAL_LINES[0]);
 
@@ -31,6 +38,10 @@ export function RevealScreen({
   const shuffle = () => {
     setLine((prev) => pickRandom(REVEAL_LINES, { exclude: prev }));
   };
+
+  // Pre-fill the homepage with the same language pair so the recipient can
+  // turn the joke around in one click. Text and theme stay opt-in.
+  const senderHref = `/?src=${encodeURIComponent(src)}&tgt=${encodeURIComponent(tgt)}`;
 
   return (
     <div
@@ -49,14 +60,26 @@ export function RevealScreen({
           {line}
         </button>
         <div className="wk-reveal-hint">tap line to shuffle</div>
-        <a
-          className="wk-reveal-btn"
-          href={googleUrl}
-          target="_blank"
-          rel="noopener noreferrer"
+        <div className="wk-reveal-actions">
+          <a
+            className="wk-reveal-btn"
+            href={googleUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Open Google Translate
+          </a>
+          <a className="wk-reveal-btn wk-reveal-btn-secondary" href={senderHref}>
+            Try it on someone
+          </a>
+        </div>
+        <button
+          type="button"
+          className="wk-reveal-replay"
+          onClick={onReplay}
         >
-          Open Google Translate
-        </a>
+          ↻ play again
+        </button>
         <div className="wk-theme-row">
           <span className="wk-theme-row-label">theme</span>
           <div className="wk-theme-swatches">

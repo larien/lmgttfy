@@ -25,7 +25,7 @@ import {
   THEME_LABELS,
   type Theme,
 } from '@/lib/themes';
-import { buildRecipientUrl } from '@/lib/url';
+import { buildRecipientUrl, SITE_BASE } from '@/lib/url';
 import { MAX_TEXT_LEN } from '@/lib/validation';
 import { Wordmark } from '@/components/shared/Wordmark';
 import { QRModal } from './QRModal';
@@ -58,18 +58,36 @@ export function Composer() {
   const [showQr, setShowQr] = useState(false);
   const [canShare, setCanShare] = useState(false);
 
+  // The shared URL prefix. Defaults to the production domain so the
+  // pre-rendered HTML matches what we serve from Cloudflare; the effect below
+  // swaps it for the actual origin once the client mounts so localhost devs
+  // get clickable links and self-hosted previews show their own host.
+  const [origin, setOrigin] = useState<string>(SITE_BASE);
+
   const { recents, add: addRecent } = useRecent();
 
   // Randomise the surface text (taunt + snark) on mount only — never during
   // SSR/build, otherwise hydration mismatches would log warnings. Same goes
-  // for navigator.share and the stored theme, which only exist client-side.
+  // for navigator.share, the stored theme, and the live origin: all only
+  // exist client-side.
+  //
+  // Also picks up ?src= and ?tgt= from the URL — the recipient reveal screen
+  // links here with the language pair pre-filled so users can fire the joke
+  // back without re-selecting languages. Invalid codes are silently ignored.
   useEffect(() => {
     /* eslint-disable react-hooks/set-state-in-effect */
     setTaunt(pickRandom(TAGLINE_TAUNTS));
     setSnark(pickRandom(REVEAL_LINES));
     setCanShare(typeof navigator !== 'undefined' && typeof navigator.share === 'function');
+    setOrigin(window.location.origin);
     const stored = loadStoredTheme();
     if (stored) setTheme(stored);
+
+    const params = new URLSearchParams(window.location.search);
+    const srcParam = params.get('src');
+    if (srcParam && isSrcLangCode(srcParam)) setSrc(srcParam);
+    const tgtParam = params.get('tgt');
+    if (tgtParam && isLangCode(tgtParam)) setTgt(tgtParam);
     /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
 
@@ -86,8 +104,8 @@ export function Composer() {
 
   // Live URL — derived state, no useEffect needed.
   const shareUrl = useMemo(
-    () => buildRecipientUrl({ src, tgt, text, theme }),
-    [src, tgt, text, theme],
+    () => buildRecipientUrl({ src, tgt, text, theme }, { base: origin }),
+    [src, tgt, text, theme, origin],
   );
 
   const shareHint =

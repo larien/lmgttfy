@@ -91,6 +91,10 @@ export function Walkthrough() {
   const [tgtActive, setTgtActive] = useState(false);
   const [dropdown, setDropdown] = useState<DropdownState>(HIDDEN_DROPDOWN);
   const [revealVisible, setRevealVisible] = useState(false);
+  // Bump to replay the sequence in place. The sequence effect depends on
+  // both `parsed` and `runId`, so each bump tears the previous run down via
+  // its cleanup (cancelled = true) and starts a fresh one.
+  const [runId, setRunId] = useState(0);
 
   const rootRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
@@ -362,12 +366,29 @@ export function Walkthrough() {
       cancelled.current = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parsed]);
+  }, [parsed, runId]);
 
   // ---- Skip handler --------------------------------------------------------
   const handleSkip = () => {
     cancelled.current = true;
     setRevealVisible(true);
+  };
+
+  // ---- Replay handler ------------------------------------------------------
+  // Resets the transient UI state the sequence accumulates (selected labels,
+  // typed text, caret) so the replay starts from the same blank slate the
+  // first run did, then bumps runId to retrigger the sequence effect.
+  const handleReplay = () => {
+    cancelled.current = true;
+    setRevealVisible(false);
+    setSrcLabel(SRC_AUTO_LABEL);
+    setTgtLabel('English');
+    setSrcActive(false);
+    setTgtActive(false);
+    setDropdown(HIDDEN_DROPDOWN);
+    if (srcTextRef.current) srcTextRef.current.textContent = '';
+    srcCaretRef.current?.classList.remove('wk-visible');
+    setRunId((n) => n + 1);
   };
 
   // ---- Render --------------------------------------------------------------
@@ -467,7 +488,10 @@ export function Walkthrough() {
         googleUrl={googleUrl}
         reportMailto={REPORT_MAILTO}
         theme={theme}
+        src={parsed.parts.src}
+        tgt={parsed.parts.tgt}
         onThemeChange={setTheme}
+        onReplay={handleReplay}
       />
     </>
   );

@@ -23,6 +23,17 @@ export function Footer() {
           Privacy
         </Link>
       </nav>
+      <div className="footer-credit">
+        Joke gone too far by Lauren ·{' '}
+        <a
+          href="https://larien.dev"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="footer-link"
+        >
+          larien.dev
+        </a>
+      </div>
     </footer>
   );
 }
