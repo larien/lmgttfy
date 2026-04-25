@@ -102,6 +102,24 @@ export function pickTypingDelay(char: string, rng: Rng = defaultRng): number {
   return rand(70, 130, rng);
 }
 
+// Multiplier applied to per-char typing delays so long texts don't drag.
+// Below TYPING_SHORT_LEN we keep the full natural rhythm — the joke reads
+// as deliberate. Above TYPING_LONG_LEN we cap the speedup so it still
+// looks like keystrokes, not a paste. Linear interpolation in between.
+//
+// Targets ~8s of typing at the 200-char validation cap (down from ~25s
+// at the unscaled rhythm of ~124ms/char).
+export const TYPING_SHORT_LEN = 30;
+export const TYPING_LONG_LEN = 200;
+export const TYPING_MIN_SCALE = 0.3;
+
+export function typingSpeedScale(textLen: number): number {
+  if (textLen <= TYPING_SHORT_LEN) return 1;
+  if (textLen >= TYPING_LONG_LEN) return TYPING_MIN_SCALE;
+  const t = (textLen - TYPING_SHORT_LEN) / (TYPING_LONG_LEN - TYPING_SHORT_LEN);
+  return 1 - t * (1 - TYPING_MIN_SCALE);
+}
+
 // Builds the cursor SVG as a data URI. Colors come from the theme's
 // computed --cursor-color and --cursor-stroke variables, so the orchestrator
 // reads `getComputedStyle` and passes them in.

@@ -7,6 +7,10 @@ import {
   planMove,
   rand,
   sleep,
+  TYPING_LONG_LEN,
+  TYPING_MIN_SCALE,
+  TYPING_SHORT_LEN,
+  typingSpeedScale,
 } from './animation';
 
 // A deterministic RNG for tests. Each call returns the next value, then loops.
@@ -119,6 +123,34 @@ describe('pickTypingDelay', () => {
     const d = pickTypingDelay('a', rng);
     expect(d).toBeGreaterThanOrEqual(70);
     expect(d).toBeLessThan(130);
+  });
+});
+
+describe('typingSpeedScale', () => {
+  it('returns 1 for empty and very short texts', () => {
+    expect(typingSpeedScale(0)).toBe(1);
+    expect(typingSpeedScale(1)).toBe(1);
+    expect(typingSpeedScale(TYPING_SHORT_LEN)).toBe(1);
+  });
+
+  it('returns the floor scale at and beyond the long-text threshold', () => {
+    expect(typingSpeedScale(TYPING_LONG_LEN)).toBe(TYPING_MIN_SCALE);
+    expect(typingSpeedScale(TYPING_LONG_LEN + 50)).toBe(TYPING_MIN_SCALE);
+  });
+
+  it('interpolates linearly between the thresholds', () => {
+    const mid = (TYPING_SHORT_LEN + TYPING_LONG_LEN) / 2;
+    const expected = 1 - 0.5 * (1 - TYPING_MIN_SCALE);
+    expect(typingSpeedScale(mid)).toBeCloseTo(expected, 6);
+  });
+
+  it('is monotonically non-increasing across the relevant range', () => {
+    let prev = Infinity;
+    for (let len = 0; len <= TYPING_LONG_LEN + 10; len++) {
+      const v = typingSpeedScale(len);
+      expect(v).toBeLessThanOrEqual(prev);
+      prev = v;
+    }
   });
 });
 

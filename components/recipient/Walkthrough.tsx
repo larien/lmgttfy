@@ -21,6 +21,7 @@ import {
   planMove,
   rand,
   sleep,
+  typingSpeedScale,
   type Point,
 } from '@/lib/animation';
 import type { ValidationError } from '@/lib/validation';
@@ -320,11 +321,15 @@ export function Walkthrough() {
     };
     updateCaret();
 
+    // Long texts get progressively faster per-char delays so total typing
+    // stays bounded (~8s at the 200-char cap). Short texts keep the natural
+    // rhythm. See typingSpeedScale in lib/animation.ts.
+    const speedScale = typingSpeedScale(text.length);
     for (let i = 0; i < text.length; i++) {
       if (cancelled.current) return;
       textEl.textContent = text.substring(0, i + 1);
       updateCaret();
-      await sleep(pickTypingDelay(text[i]));
+      await sleep(pickTypingDelay(text[i]) * speedScale);
     }
 
     await sleep(rand(300, 500));
